@@ -47,7 +47,7 @@ export const createStore = (initialState = {}, options = {}) => {
 
   const subscribe = (listener, selector) => {
     if (selector) {
-      listener.LISTENER= Symbol('@@killa-listener')
+      listener.LISTENER = Symbol('@@killa-listener')
       listener.STATE = selector(state)
       listener.SELECTOR = selector
     }

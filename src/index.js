@@ -1,3 +1,5 @@
-export { core } from './core'
+import { createStore } from './core'
 
-export default core
+export default createStore
+
+export { createStore }
