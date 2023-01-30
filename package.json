@@ -1,8 +1,8 @@
 {
   "name": "killa",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "State management for Vanillajs",
-  "main": "dist/index.js",
+  "main": "./cjs/index.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
