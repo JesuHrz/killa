@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Store - Vanilla</title>
+  </head>
+  <body>
+    <p>Count: <span class="js-count">0</span></p>
+    <button class="js-increment">+1</button>
+    <button class="js-restore-one">Restore to inital value</button>
+    <button class="js-restore-two">Restore from scratch</button>
+    <script src="../../dist/killa.min.js"></script>
+    <script>
+      const killa = window.killa
+
+      const $text = document.querySelector('.js-count')
+      const $button = document.querySelector('.js-increment')
+      const $restoreOne = document.querySelector('.js-restore-one')
+      const $restoreTwo = document.querySelector('.js-restore-two')
+
+      const store = killa.createStore({
+        count: 0,
+        text: '',
+        user: {
+          name: 'Jesus Hernandez',
+          range: [0, 1] }
+        }
+      )
+
+      window.addEventListener('DOMContentLoaded', () => {
+        store.subscribe((state, prevState) => {
+          // console.log('Updated state', store.getState())
+          console.log('state', state)
+          console.log('prevState', prevState)
+        })
+
+        // store.subscribe((state) => {
+        //   console.log('Updated new state', state)
+        //   $text.textContent = store.getState().count
+        // }, (state) => state.count)
+
+        // store.subscribe(() => {
+        //   console.log('Updated text state', store.getState())
+        // }, (state) => state.text)
+
+        $button.addEventListener('click', () => {
+          store.setState((state) => {
+            return {
+              ...state,
+              count: state.count + 1
+            }
+          })
+        })
+
+        $restoreOne.addEventListener('click', () => {
+          store.setState(() => {
+            return {}
+          })
+        })
+
+        $restoreTwo.addEventListener('click', () => {
+          store.setState((state) => {
+            return {}
+          }, true)
+        })
+      })
+
+    </script>
+  </body>
+</html>
