@@ -7,26 +7,22 @@ export const createStore = (initialState = {}, options = {}) => {
   const getState = () => clone(state)
 
   const setState = (fn, force = false) => {
-    const prevState = state
-    const newState = fn(state)
+    const newState = fn(getState())
 
     let equals = false
 
-    if (force) {
-      state = {}
-    }
-
     if (typeof options?.compare === 'function') {
-      equals = options.compare(prevState, newState)
+      equals = options.compare(state, newState)
     }
 
     if (!equals) {
+      const prevState = state
       const _newState = !Object.keys(newState).length ? clone(initialState) : newState
-      state = force ? {} : clone(Object.assign(state, _newState))
+      state = force ? {} : Object.assign(getState(), _newState)
 
       listeners.forEach((listener) => {
         const _prevState = clone(prevState)
-        const _newState = clone(state)
+        const _newState = getState()
 
         if (listener.LISTENER) {
           const currentState = listener.STATE

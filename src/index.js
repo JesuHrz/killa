@@ -1,5 +1,5 @@
 import { createStore } from './core'
 
-export default createStore
-
 export { createStore }
+
+export default createStore
