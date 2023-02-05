@@ -2,19 +2,22 @@ const path = require('path')
 const glob = require('glob')
 const esbuild = require('esbuild')
 
-const buildForESMAndCJS = async ({ format, ...options }) => {
+const buildForCustomEnvironment = async ({ format = 'cjs', outdir = 'dist/', ...options }) => {
   const entryPoints = glob.sync(path.resolve(process.cwd(), 'src/**/*.js'))
 
   const result = await esbuild.build({
     entryPoints,
+    outdir,
     packages: 'external',
-    outdir: `dist/${format}`,
     format,
     platform: 'node',
+    target: [
+      'node12'
+    ],
     ...options
   })
 
-  console.log(`Build for ${format.toUpperCase()} 🚀`, result)
+  console.log('Build for Custom environment 🚀', result)
 }
 
 const buildForBrowser = async () => {
@@ -30,7 +33,8 @@ const buildForBrowser = async () => {
       'chrome58',
       'edge16',
       'firefox57',
-      'safari11'
+      'safari11',
+      'node12'
     ]
   })
 
@@ -38,8 +42,7 @@ const buildForBrowser = async () => {
 }
 
 const init = async () => {
-  buildForESMAndCJS({ format: 'esm' })
-  buildForESMAndCJS({ format: 'cjs' })
+  buildForCustomEnvironment()
   buildForBrowser()
 }
 

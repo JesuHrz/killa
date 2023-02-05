@@ -1,9 +1,13 @@
 {
   "name": "killa",
-  "version": "0.2.1",
-  "description": "State management for Vanillajs",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
+  "version": "0.3.0",
+  "description": "State management for Vanilla and React",
+  "main": "./dist/index.js",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./dist/index.js",
+    "./deep-equals": "./dist/deep-equals.js"
+  },
   "files": [
     "dist"
   ],
@@ -14,13 +18,15 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --collectCoverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watchAll",
+    "pre-publish": "node pre-publish.js"
   },
   "engines": {
-    "node": ">=14..0"
+    "node": ">=12"
   },
   "keywords": [
     "killa",
+    "react",
     "state",
     "management",
     "store"

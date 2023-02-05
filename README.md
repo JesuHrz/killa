@@ -3,9 +3,23 @@
 </p>
 
 # KILLA
+Killa is a small and lightweight state management library for vanilla and soon for React.
 
 ```bash
 npm install killa
+```
+
+### Installing for the Browser
+To use directly minified version in the browser:
+
+```html
+<script src="https://unpkg.com/killa@0.3.0/dist/killa.min.js"></script>
+```
+
+Or from jsdelivr:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/killa@0.3.0/dist/killa.min.js"></script>
 ```
 
 ## How to create your first store
@@ -38,7 +52,7 @@ store.getState() // { counter: 0 }
 ```
 
 ## How to update your store
-
+****
 ```js
 import killa from 'killa'
 
@@ -53,15 +67,15 @@ store.setState(() => {
 store.getState() // { counter: 1 }
 ```
 
-## How to subscribe to events
+## How to subscribe to state events
 
 ```js
 import killa from 'killa'
 
 const store = killa.createStore({ counter: 0 })
 
-// This subscribe will be called every time any value of the status is updated.
-// We could say that this would be a global subscribe.
+// This subscriber will be called every time any value of the status
+// is updated. We could say that this would be a global subscribe.
 store.subscribe((state, prevState) => {
   console.log('Updated state', state) // { counter: 1 }
   console.log('Previous state', prevState) // { counter: 0 }
@@ -76,20 +90,25 @@ store.setState(() => {
 store.getState() // { counter: 1 }
 ```
 
-You can also subscribe a single event
+But you can also subscribe a single event
 
 ```js
 import killa from 'killa'
 
-const store = killa.createStore({ counter: 0, type: '' })
+const store = killa.createStore({ counter: 0, type: '', filter: '' })
 
-// This subscribe will be called after updating the counter state.
+// This subscriber will be called after updating the counter state.
 store.subscribe((state, prevState) => {
-  console.log('Updated state', state) // { counter: 1 }
-  console.log('Previous state', prevState) // { counter: 0 }
+  console.log('Updated state', state) // { counter: 1, type: '', filter: '' }
+  console.log('Previous state', prevState) // { counter: 0, type: '', filter: '' }
 }, (state) => state.counter)
 
-// This subscribe will not be called since the type state was not updated.
+// This subscriber will be called when the state of counter or filter is updated.
+store.subscribe((state) => {
+  console.log('Counter and filter state subscriber', state.counter)
+}, (state) => ({ counter: state.counter, filter: state.filter }))
+
+// This subscriber will not be called since the type state was not updated.
 store.subscribe((state, prevState) => {
   console.log('Updated state', state)
   console.log('Previous state', prevState)
@@ -102,5 +121,8 @@ store.setState((state) => {
   }
 })
 
-store.getState() // { counter: 1 }
+store.getState() // { counter: 1, type: '', filter: '' }
 ```
+
+## Support
+Chrome 58, Firefox 57, IE 11, Edge 16, Safari  11, & Node.js 12.
