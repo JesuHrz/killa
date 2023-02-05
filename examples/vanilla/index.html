@@ -6,7 +6,7 @@
     <title>Store - Vanilla</title>
   </head>
   <body>
-    <p>Count: <span class="js-count">0</span></p>
+    <p>Counter: <span class="js-counter">0</span></p>
     <button class="js-increment">+1</button>
     <button class="js-reset">Restore to inital value</button>
     <button class="js-reset-from-scratch">Restore from scratch</button>
@@ -14,32 +14,40 @@
     <script>
       const killa = window.killa
 
-      const $text = document.querySelector('.js-count')
+      const $text = document.querySelector('.js-counter')
       const $button = document.querySelector('.js-increment')
       const $restoreOne = document.querySelector('.js-reset')
       const $restoreTwo = document.querySelector('.js-reset-from-scratch')
 
-      const store = killa.createStore({ count: 0, text: '' })
+      const store = killa.createStore({ counter: 0, text: '', filter: '' })
 
       window.addEventListener('DOMContentLoaded', () => {
         store.subscribe((state, prevState) => {
-          console.log('Updated state', store.getState())
+          console.log('Global subscriber', store.getState())
         })
 
         store.subscribe((state) => {
-          console.log('Updated count state', state)
-          $text.textContent = store.getState().count
-        }, (state) => state.count)
+          console.log('Counter state subscriber', state.counter)
+          $text.textContent = state.counter
+        }, (state) => state.counter)
 
-        store.subscribe(() => {
-          console.log('Updated text state', store.getState())
+        store.subscribe((state) => {
+          console.log('Text state subscriber', state.counter)
         }, (state) => state.text)
+
+        store.subscribe((state) => {
+          console.log('Counter and filter state subscriber', state.counter)
+        }, (state) => ({ counter: state.counter, filter: state.filter }))
+
+        store.subscribe((state) => {
+          console.log('Counter and filter state subscriber', state.counter)
+        }, (state) => [{ counter: state.counter, filter: state.filter }])
 
         $button.addEventListener('click', () => {
           store.setState((state) => {
             return {
               ...state,
-              count: state.count + 1
+              counter: state.counter + 1
             }
           })
         })
@@ -56,7 +64,6 @@
           }, true)
         })
       })
-
     </script>
   </body>
 </html>

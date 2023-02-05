@@ -1,5 +1,8 @@
 import clone from 'clone'
 
+import { SYMBOL_LISTENER } from './constants'
+import { deepEquals } from './deep-equals'
+
 export const createStore = (initialState = {}, options = {}) => {
   const listeners = new Set()
   let state = clone(initialState)
@@ -25,11 +28,11 @@ export const createStore = (initialState = {}, options = {}) => {
         const _newState = getState()
 
         if (listener.LISTENER) {
-          const currentState = listener.STATE
-          const nextState = listener.SELECTOR(state)
+          const selectorState = listener.SELECTOR_STATE
+          const nextselectorState = listener.SELECTOR(state)
 
-          if (!Object.is(currentState, nextState)) {
-            listener.STATE = nextState
+          if (!deepEquals(selectorState, nextselectorState)) {
+            listener.SELECTOR_STATE = nextselectorState
             listener(_newState, _prevState)
           }
 
@@ -43,8 +46,8 @@ export const createStore = (initialState = {}, options = {}) => {
 
   const subscribe = (listener, selector) => {
     if (selector) {
-      listener.LISTENER = Symbol('@@killa-listener')
-      listener.STATE = selector(state)
+      listener.LISTENER = SYMBOL_LISTENER
+      listener.SELECTOR_STATE = selector(state)
       listener.SELECTOR = selector
     }
 
