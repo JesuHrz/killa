@@ -2,12 +2,12 @@ const path = require('path')
 const glob = require('glob')
 const esbuild = require('esbuild')
 
-const buildForCustomEnvironment = async ({ format = 'cjs', outdir = 'dist/', ...options }) => {
+const buildForCustomEnvironment = async ({ format = 'cjs', ...options } = {}) => {
   const entryPoints = glob.sync(path.resolve(process.cwd(), 'src/**/*.js'))
 
   const result = await esbuild.build({
     entryPoints,
-    outdir,
+    outdir: `dist/${format}`,
     packages: 'external',
     format,
     platform: 'node',
@@ -17,7 +17,7 @@ const buildForCustomEnvironment = async ({ format = 'cjs', outdir = 'dist/', ...
     ...options
   })
 
-  console.log('Build for Custom environment 🚀', result)
+  console.log(`Build for ${format.toUpperCase()} 🚀`, result)
 }
 
 const buildForBrowser = async () => {
@@ -42,7 +42,8 @@ const buildForBrowser = async () => {
 }
 
 const init = async () => {
-  buildForCustomEnvironment()
+  buildForCustomEnvironment({ format: 'cjs' })
+  buildForCustomEnvironment({ format: 'esm' })
   buildForBrowser()
 }
 

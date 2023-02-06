@@ -9,8 +9,8 @@ Killa is a small and lightweight state management library for vanilla and soon f
 npm install killa
 ```
 
-### Installing for the Browser
-To use directly minified version in the browser:
+### Installing the vanilla version for Browser
+To use directly vanilla minified version in the browser:
 
 ```html
 <script src="https://unpkg.com/killa@0.3.0/dist/killa.min.js"></script>
@@ -24,7 +24,7 @@ Or from jsdelivr:
 
 ## How to create your first store
 
-In order to create your first store you need to provide an object which will manage your state. **(The internal state is inmutable)**
+To create your first store you need to provide an object which will manage your state. **(The internal state is inmutable)**
 
 ```js
 
@@ -99,8 +99,10 @@ const store = killa.createStore({ counter: 0, type: '', filter: '' })
 
 // This subscriber will be called after updating the counter state.
 store.subscribe((state, prevState) => {
-  console.log('Updated state', state) // { counter: 1, type: '', filter: '' }
-  console.log('Previous state', prevState) // { counter: 0, type: '', filter: '' }
+  console.log('Updated state', state)
+  // { counter: 1, type: '', filter: '' }
+  console.log('Previous state', prevState)
+  // { counter: 0, type: '', filter: '' }
 }, (state) => state.counter)
 
 // This subscriber will be called when the state of counter or filter is updated.
@@ -108,7 +110,8 @@ store.subscribe((state) => {
   console.log('Counter and filter state subscriber', state.counter)
 }, (state) => ({ counter: state.counter, filter: state.filter }))
 
-// This subscriber will not be called since the type state was not updated.
+// This subscriber will not be called since the type state
+// was not updated.
 store.subscribe((state, prevState) => {
   console.log('Updated state', state)
   console.log('Previous state', prevState)
@@ -117,7 +120,7 @@ store.subscribe((state, prevState) => {
 store.setState((state) => {
   return {
     ...state,
-    counter: 1
+    counter: state.counter + 1
   }
 })
 

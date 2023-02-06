@@ -1,4 +1,4 @@
-const isObject = (object) => {
+export const isObject = (object) => {
   return object !== null && typeof object === 'object'
 }
 

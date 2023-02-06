@@ -1,24 +1,22 @@
 import clone from 'clone'
 
-import { SYMBOL_LISTENER } from './constants'
-import { deepEquals } from './deep-equals'
+import { SYMBOL_STORE, SYMBOL_LISTENER } from './utils/constants'
+import { deepEquals } from './utils/deep-equals'
 
 export const createStore = (initialState = {}, options = {}) => {
   const listeners = new Set()
   let state = clone(initialState)
+
+  const compare = typeof options?.compare === 'function'
+    ? options?.compare
+    : deepEquals
 
   const getState = () => clone(state)
 
   const setState = (fn, force = false) => {
     const newState = fn(getState())
 
-    let equals = false
-
-    if (typeof options?.compare === 'function') {
-      equals = options.compare(state, newState)
-    }
-
-    if (!equals) {
+    if (!compare(state, newState)) {
       const prevState = state
       const _newState = !Object.keys(newState).length ? clone(initialState) : newState
       state = force ? {} : Object.assign(getState(), _newState)
@@ -31,7 +29,7 @@ export const createStore = (initialState = {}, options = {}) => {
           const selectorState = listener.SELECTOR_STATE
           const nextselectorState = listener.SELECTOR(state)
 
-          if (!deepEquals(selectorState, nextselectorState)) {
+          if (!compare(selectorState, nextselectorState)) {
             listener.SELECTOR_STATE = nextselectorState
             listener(_newState, _prevState)
           }
@@ -55,5 +53,10 @@ export const createStore = (initialState = {}, options = {}) => {
     return () => listeners.delete(listener)
   }
 
-  return { getState, setState, subscribe }
+  return Object.freeze({
+    STORE: SYMBOL_STORE,
+    getState,
+    setState,
+    subscribe
+  })
 }
