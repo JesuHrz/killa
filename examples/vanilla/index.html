@@ -32,10 +32,6 @@
         }, (state) => state.counter)
 
         store.subscribe((state) => {
-          console.log('Text state subscriber', state.counter)
-        }, (state) => state.text)
-
-        store.subscribe((state) => {
           console.log('Counter and filter state subscriber', state.counter)
         }, (state) => ({ counter: state.counter, filter: state.filter }))
 

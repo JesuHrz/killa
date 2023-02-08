@@ -1,5 +1,6 @@
 import clone from 'clone'
 
+// Utils
 import { SYMBOL_STORE, SYMBOL_LISTENER } from './utils/constants'
 import { deepEquals } from './utils/deep-equals'
 
@@ -14,12 +15,13 @@ export const createStore = (initialState = {}, options = {}) => {
   const getState = () => clone(state)
 
   const setState = (fn, force = false) => {
-    const newState = fn(getState())
+    let newState = fn(state)
 
     if (!compare(state, newState)) {
       const prevState = state
-      const _newState = !Object.keys(newState).length ? clone(initialState) : newState
-      state = force ? {} : Object.assign(getState(), _newState)
+
+      newState = !Object.keys(newState).length ? initialState : newState
+      state = force ? {} : Object.assign(getState(), newState)
 
       listeners.forEach((listener) => {
         const _prevState = clone(prevState)
@@ -53,10 +55,12 @@ export const createStore = (initialState = {}, options = {}) => {
     return () => listeners.delete(listener)
   }
 
-  return Object.freeze({
+  const store = {
     STORE: SYMBOL_STORE,
     getState,
     setState,
     subscribe
-  })
+  }
+
+  return Object.freeze(store)
 }

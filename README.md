@@ -3,7 +3,7 @@
 </p>
 
 # KILLA
-Killa is a small and lightweight state management library for vanilla and soon for React.
+Killa is a small and lightweight state management library for vanilla and React.
 
 ```bash
 npm install killa
@@ -22,7 +22,7 @@ Or from jsdelivr:
 <script src="https://cdn.jsdelivr.net/npm/killa@0.3.0/dist/killa.min.js"></script>
 ```
 
-## How to create your first store
+### How to create your first store
 
 To create your first store you need to provide an object which will manage your state. **(The internal state is inmutable)**
 
@@ -38,25 +38,23 @@ const killa = require('killa')
 // or
 const { createStore } = require('killa')
 
-const store = killa.createStore({ counter: 0 })
+const store = killa({ counter: 0 })
+// or
+const store = createStore({ counter: 0 })
 ```
 
-## How to access to your store
+## Vanilla
+### How to access to your store
 
 ```js
-import killa from 'killa'
-
-const store = killa.createStore({ counter: 0 })
+const store = killa({ counter: 0 })
 
 store.getState() // { counter: 0 }
 ```
 
-## How to update your store
-****
+### How to update your store
 ```js
-import killa from 'killa'
-
-const store = killa.createStore({ counter: 0 })
+const store = killa({ counter: 0 })
 
 store.setState(() => {
   return {
@@ -67,15 +65,13 @@ store.setState(() => {
 store.getState() // { counter: 1 }
 ```
 
-## How to subscribe to state events
+### How to subscribe to state events
 
 ```js
-import killa from 'killa'
+const store = killa({ counter: 0 })
 
-const store = killa.createStore({ counter: 0 })
-
-// This subscriber will be called every time any value of the status
-// is updated. We could say that this would be a global subscribe.
+// This subscriber will be called every time any value of the state is updated.
+// We could say that this would be a global subscriber.
 store.subscribe((state, prevState) => {
   console.log('Updated state', state) // { counter: 1 }
   console.log('Previous state', prevState) // { counter: 0 }
@@ -93,9 +89,7 @@ store.getState() // { counter: 1 }
 But you can also subscribe a single event
 
 ```js
-import killa from 'killa'
-
-const store = killa.createStore({ counter: 0, type: '', filter: '' })
+const store = killa({ counter: 0, type: '', filter: '' })
 
 // This subscriber will be called after updating the counter state.
 store.subscribe((state, prevState) => {
@@ -110,8 +104,7 @@ store.subscribe((state) => {
   console.log('Counter and filter state subscriber', state.counter)
 }, (state) => ({ counter: state.counter, filter: state.filter }))
 
-// This subscriber will not be called since the type state
-// was not updated.
+// This subscriber will not be called since the type state was not updated.
 store.subscribe((state, prevState) => {
   console.log('Updated state', state)
   console.log('Previous state', prevState)
@@ -127,5 +120,40 @@ store.setState((state) => {
 store.getState() // { counter: 1, type: '', filter: '' }
 ```
 
+## React
+
+```jsx
+import killa, { useStore } from 'killa'
+const store = killa({ counter: 0, type: '', filter: '' })
+
+const Counter = () => {
+  // This component will be rendered when counter or filter state changes
+  const { state, setState } = useStore(store, (state) => {
+    return {
+      counter: state.counter,
+      filter: state.filter
+    }
+  })
+
+  const handleCounter = () => {
+    setState(() => {
+      return {
+        ...state,
+        counter: state.counter + 1
+      }
+    })
+  }
+
+  return (
+    <div>
+      <p>Counter: {state.counter}</p>
+      <button onClick={handleCounter}>
+        Counter +1
+      </button>
+    </div>
+  )
+}
+```
+
 ## Support
-Chrome 58, Firefox 57, IE 11, Edge 16, Safari  11, & Node.js 12.
+React >= 16.8, Chrome 58, Firefox 57, IE 11, Edge 16, Safari  11, & Node.js 12.

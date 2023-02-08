@@ -1,5 +1,5 @@
 module.exports = {
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   rootDir: '.',
   transform: {
     '^.+\\.js?$': ['@swc/jest']

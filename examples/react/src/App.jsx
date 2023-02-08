@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import killa, { useStore } from 'killa'
 import reactLogo from './assets/react.svg'
 import './App.css'
@@ -6,28 +6,26 @@ import './App.css'
 const store = killa({ counter: 0, filter: '' })
 
 const Counter = () => {
-  const { state, setState } = useStore(store, (state) => {
+  const { state } = useStore(store, (state) => {
     return {
       counter: state.counter,
       filter: state.filter
     }
   })
 
-  const handleCounter = useCallback(() => {
-    setState((state) => {
+  const handleCounter = () => {
+    store.setState((state) => {
       return {
         ...state,
         counter: state.counter + 1
       }
     })
-  }, [])
+  }
 
   return (
     <div className='card'>
       <p>Counter: {state.counter}</p>
-      <button
-        onClick={handleCounter}
-      >
+      <button onClick={handleCounter}>
         Counter +1
       </button>
     </div>

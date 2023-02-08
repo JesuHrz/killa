@@ -1,5 +1,7 @@
 import { useDebugValue } from 'react'
 import useSyncExternalStoreExports from 'use-sync-external-store/shim/with-selector'
+
+// Utils
 import { deepEquals } from './utils/deep-equals'
 import { SYMBOL_STORE } from './utils/constants'
 

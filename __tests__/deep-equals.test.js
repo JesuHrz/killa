@@ -1,5 +1,5 @@
 
-import { deepEquals } from '../src/deep-equals'
+import { deepEquals } from '../src/utils/deep-equals'
 
 describe('DeepEquals', () => {
   it('Should export deepEquals as named export', () => {
