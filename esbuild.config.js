@@ -42,7 +42,12 @@ const buildForBrowser = async () => {
 }
 
 const init = async () => {
-  buildForCustomEnvironment({ format: 'cjs' })
+  buildForCustomEnvironment({
+    format: 'cjs',
+    banner: {
+      js: '"use strict"'
+    }
+  })
   buildForCustomEnvironment({ format: 'esm' })
   buildForBrowser()
 }

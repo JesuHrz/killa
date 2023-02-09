@@ -7,9 +7,7 @@ import { SYMBOL_STORE } from './utils/constants'
 
 const useSyncExternalStore = useSyncExternalStoreExports.useSyncExternalStoreWithSelector
 
-const _selector = (state) => state
-
-export const useStore = (store, selector = _selector) => {
+export const useStore = (store, selector = (state) => state) => {
   if (store.STORE !== SYMBOL_STORE) throw new Error('Provide a store valid for killa.')
 
   const state = useSyncExternalStore(

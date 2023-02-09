@@ -86,7 +86,7 @@ store.setState(() => {
 store.getState() // { counter: 1 }
 ```
 
-But you can also subscribe a single event
+But you can also subscribe to a specific event:
 
 ```js
 const store = killa({ counter: 0, type: '', filter: '' })
@@ -124,6 +124,7 @@ store.getState() // { counter: 1, type: '', filter: '' }
 
 ```jsx
 import killa, { useStore } from 'killa'
+
 const store = killa({ counter: 0, type: '', filter: '' })
 
 const Counter = () => {
@@ -135,8 +136,8 @@ const Counter = () => {
     }
   })
 
-  const handleCounter = () => {
-    setState(() => {
+  const handleCounter = (e) => {
+    setState((state) => {
       return {
         ...state,
         counter: state.counter + 1

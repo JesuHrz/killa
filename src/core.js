@@ -64,3 +64,5 @@ export const createStore = (initialState = {}, options = {}) => {
 
   return Object.freeze(store)
 }
+
+export default createStore
