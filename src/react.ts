@@ -5,10 +5,18 @@ import useSyncExternalStoreExports from 'use-sync-external-store/shim/with-selec
 import { deepEquals } from './utils/deep-equals'
 import { SYMBOL_STORE } from './utils/constants'
 
-const useSyncExternalStore = useSyncExternalStoreExports.useSyncExternalStoreWithSelector
+// Types
+import type { Store, Selector } from './core'
 
-export const useStore = (store, selector = (state) => state) => {
-  if (store.STORE !== SYMBOL_STORE) throw new Error('Provide a store valid for killa.')
+const useSyncExternalStore =
+  useSyncExternalStoreExports.useSyncExternalStoreWithSelector
+
+export const useStore = <T extends Record<string, any>>(
+  store: Store<T>,
+  selector: Selector<T> = (state) => state
+) => {
+  if (store.STORE !== SYMBOL_STORE)
+    throw new Error('Provide a store valid for killa.')
 
   const state = useSyncExternalStore(
     store.subscribe,

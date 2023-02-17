@@ -1,8 +1,8 @@
-export const isObject = (object) => {
+export const isObject = (object: any): boolean => {
   return object !== null && typeof object === 'object'
 }
 
-export const deepEquals = (typeA, typeB) => {
+export const deepEquals = (typeA: any, typeB: any): boolean => {
   if (!isObject(typeA) && !isObject(typeB) && Object.is(typeA, typeB)) {
     return true
   }
@@ -12,8 +12,10 @@ export const deepEquals = (typeA, typeB) => {
   }
 
   if (
-    !isObject(typeA) || typeA === null ||
-    !isObject(typeB) || typeB === null
+    !isObject(typeA) ||
+    typeA === null ||
+    !isObject(typeB) ||
+    typeB === null
   ) {
     return false
   }

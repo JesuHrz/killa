@@ -1,26 +1,48 @@
 import '@testing-library/jest-dom/extend-expect'
 
 import { useEffect, useRef } from 'react'
-import { render, screen, cleanup, fireEvent, renderHook, act } from '@testing-library/react'
-import killa, { useStore } from '../src'
+import {
+  render,
+  screen,
+  cleanup,
+  fireEvent,
+  renderHook,
+  act
+} from '@testing-library/react'
 
-const handleCounter = (state) => {
+import killa, { useStore, Store } from '../src'
+
+const handleCounter = (state: any) => {
   return {
     ...state,
     counter: state.counter + 1
   }
 }
 
-const App = ({ store, handleCounter }) => {
+const App = ({
+  store,
+  handleCounter
+}: {
+  store: Store
+  handleCounter?: ((state: any) => void) | undefined
+}) => {
   return (
     <div>
       <Counter store={store} onCounter={handleCounter} />
-      <Counter store={store} label='Counter +2' onCounter={handleCounter} />
+      <Counter store={store} label="Counter +2" onCounter={handleCounter} />
     </div>
   )
 }
 
-const Counter = ({ store, label = 'Counter +1', onCounter }) => {
+const Counter = ({
+  store,
+  label = 'Counter +1',
+  onCounter
+}: {
+  store: Store
+  label?: string
+  onCounter?: ((state: any) => void) | undefined
+}) => {
   const { state, setState } = useStore(store, (state) => {
     return {
       counter: state.counter,
@@ -29,31 +51,55 @@ const Counter = ({ store, label = 'Counter +1', onCounter }) => {
   })
 
   const handleCounter = () => {
-    setState(onCounter)
+    if (onCounter) {
+      setState(onCounter)
+    }
   }
 
   return (
     <div>
       <p>Counter: {state.counter}</p>
-      <button onClick={handleCounter}>
-        {label}
-      </button>
+      <button onClick={handleCounter}>{label}</button>
     </div>
   )
 }
 
 describe('React', () => {
-  let store
+  let store: Store
 
   beforeEach(() => {
+    store = killa({ counter: 1, filter: '' })
     cleanup()
-    store = killa({ counter: 1 })
   })
 
-  it('Should render Counter with the counter state with initial state', () => {
+  it('Should render Counter with initial state', () => {
     render(<Counter store={store} onCounter={handleCounter} />)
     const $counter = screen.getByText(/counter: 1/i)
     expect($counter).toBeInTheDocument()
+  })
+
+  it('Should render Counter with the selector by default', () => {
+    const Component = () => {
+      useStore(store)
+
+      return <p>Component</p>
+    }
+
+    render(<Component />)
+  })
+
+  it('Should render Counter with the counter state with initial state', () => {
+    const Component = () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      useStore({})
+
+      return <p>Component</p>
+    }
+
+    expect(() => render(<Component />)).toThrow(
+      'Provide a store valid for killa.'
+    )
   })
 
   it('Should update Counter state when clicking on the counter button', () => {
@@ -91,7 +137,7 @@ describe('React', () => {
     expect(screen.getAllByText(/counter: 1/i)).toHaveLength(2)
     expect($buttons).toHaveLength(2)
 
-    fireEvent.click($buttons[0])
+    $buttons[0] && fireEvent.click($buttons[0])
 
     expect(screen.getAllByText(/counter: 2/i)).toHaveLength(2)
   })
@@ -114,7 +160,7 @@ describe('React', () => {
             counter: state.counter + 1
           }
         })
-      }, [])
+      }, [setState])
 
       countRef.current++
 

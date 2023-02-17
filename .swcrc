@@ -2,7 +2,7 @@
   "jsc": {
     "target": "es2015",
     "parser": {
-      "syntax": "ecmascript",
+      "syntax": "typescript",
       "jsx": true
     },
     "transform": {

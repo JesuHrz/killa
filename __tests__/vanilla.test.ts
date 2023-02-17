@@ -1,9 +1,19 @@
-
 import killa, { createStore } from '../src'
 
 describe('Vanilla', () => {
   it('Should export createStore as default export and named export', () => {
     expect(killa).toBe(createStore)
+  })
+
+  it('Should fail when the store is not object', () => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      killa(1)
+      throw new Error('Should fail because the store is not object')
+    } catch (e: any) {
+      expect(e.message).toBe('Store must be an object.')
+    }
   })
 
   it('Should create the store and provide the setState, getState and subscribe methods', () => {
@@ -15,7 +25,7 @@ describe('Vanilla', () => {
 
   it('Should set the inital state and state must be a new Object', () => {
     const initalState = { count: 0 }
-    const store = killa(initalState)
+    const store = killa<{ count: number }>({ count: 0 })
     const state = store.getState()
 
     expect(state).toEqual(initalState)
@@ -23,14 +33,13 @@ describe('Vanilla', () => {
   })
 
   it('Should set the inital state as empty object when inital state is not provided', () => {
-    const store = killa()
-
+    const store = killa<{ count: number }>()
     expect(store.getState()).toEqual({})
   })
 
   it('Should update the state', () => {
     const initalState = { count: 0 }
-    const store = killa(initalState)
+    const store = killa<{ count: number }>(initalState)
     const cb = jest.fn(() => ({ count: 1 }))
 
     store.setState(cb)
@@ -42,7 +51,7 @@ describe('Vanilla', () => {
 
   it('Should pass the current state as param in the setState method', () => {
     const initalState = { count: 0 }
-    const store = killa(initalState)
+    const store = killa<{ count: number }>(initalState)
 
     store.setState((state) => {
       expect(state).toEqual(initalState)
@@ -57,7 +66,7 @@ describe('Vanilla', () => {
 
   it('Should call the global subscriber when updating the state', () => {
     const initalState = { count: 0 }
-    const store = killa(initalState)
+    const store = killa<{ count: number }>(initalState)
     const cb = jest.fn()
 
     store.subscribe(cb)
@@ -195,9 +204,7 @@ describe('Vanilla', () => {
     const compare = jest.fn(() => true)
     const firstSubscribe = jest.fn()
 
-    const store = killa({ count: 0, text: '' }, {
-      compare
-    })
+    const store = killa({ count: 0, text: '' }, { compare })
 
     store.subscribe(firstSubscribe)
     store.setState((state) => state)
@@ -208,9 +215,7 @@ describe('Vanilla', () => {
 
   it('Should update the state if the compare function return false', () => {
     const compare = jest.fn(() => false)
-    const store = killa({ count: 0, text: '' }, {
-      compare
-    })
+    const store = killa({ count: 0, text: '' }, { compare })
 
     const firstSubscribe = jest.fn()
 

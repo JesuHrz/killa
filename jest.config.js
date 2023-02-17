@@ -2,7 +2,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   rootDir: '.',
   transform: {
-    '^.+\\.js?$': ['@swc/jest']
+    '^.+\\.(t|j)sx?$': '@swc/jest'
   },
-  testMatch: ['**/__tests__/**/*.js']
+  testMatch: ['**/__tests__/**/*.((t|j)s|(t|j)sx)']
 }

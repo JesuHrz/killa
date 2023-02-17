@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "allowJs": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "killa": ["./src/index.((t|j)s|(t|j)sx)"],
+      "killa/*": ["./src/*.((t|j)s|(t|j)sx)"],
+    }
+  },
+  "include": [
+    "src/**/*",
+    "__tests__/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "examples",
+  ],
+}

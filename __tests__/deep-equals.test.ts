@@ -1,4 +1,3 @@
-
 import { deepEquals } from '../src/utils/deep-equals'
 
 describe('DeepEquals', () => {
@@ -32,30 +31,52 @@ describe('DeepEquals', () => {
   })
 
   it('Should compare arrays of objects', () => {
-    expect(deepEquals(
-      [{ a: 1, b: 2, c: 'c' }, { a: 1, b: 2, c: 'c' }],
-      [{ a: 1, b: 2, c: 'c' }, { a: 1, b: 2, c: 'c' }]
-    )).toBe(true)
-    expect(deepEquals(
-      [{ a: 1, b: 2, c: 'c' }, { a: 1, b: 2, c: 'c' }],
-      [{ a: 2, b: 1, c: 'c' }, { a: 1, b: 2, c: 'c' }]
-    )).toBe(false)
+    expect(
+      deepEquals(
+        [
+          { a: 1, b: 2, c: 'c' },
+          { a: 1, b: 2, c: 'c' }
+        ],
+        [
+          { a: 1, b: 2, c: 'c' },
+          { a: 1, b: 2, c: 'c' }
+        ]
+      )
+    ).toBe(true)
+    expect(
+      deepEquals(
+        [
+          { a: 1, b: 2, c: 'c' },
+          { a: 1, b: 2, c: 'c' }
+        ],
+        [
+          { a: 2, b: 1, c: 'c' },
+          { a: 1, b: 2, c: 'c' }
+        ]
+      )
+    ).toBe(false)
   })
 
   it('Should compare simple objects', () => {
-    expect(deepEquals({ a: 1, b: 2, c: 'c' }, { a: 1, b: 2, c: 'c' })).toBe(true)
+    expect(deepEquals({ a: 1, b: 2, c: 'c' }, { a: 1, b: 2, c: 'c' })).toBe(
+      true
+    )
     expect(deepEquals({ a: 1, b: 2, c: 'c' }, { a: 2, b: 1 })).toBe(false)
   })
 
   it('Should compare nested objects', () => {
-    expect(deepEquals(
-      { a: 1, b: 2, c: { y: 2, z: '1' } },
-      { a: 1, b: 2, c: { y: 2, z: '1' } }
-    )).toBe(true)
-    expect(deepEquals(
-      { a: 1, b: 2, c: { y: 2, z: '1' } },
-      { a: 1, b: 2, c: { y: 2, z: '2' } }
-    )).toBe(false)
+    expect(
+      deepEquals(
+        { a: 1, b: 2, c: { y: 2, z: '1' } },
+        { a: 1, b: 2, c: { y: 2, z: '1' } }
+      )
+    ).toBe(true)
+    expect(
+      deepEquals(
+        { a: 1, b: 2, c: { y: 2, z: '1' } },
+        { a: 1, b: 2, c: { y: 2, z: '2' } }
+      )
+    ).toBe(false)
   })
 
   it('Should compare functions', () => {
@@ -67,9 +88,13 @@ describe('DeepEquals', () => {
   })
 
   it('Should compare Maps', () => {
-    const firstMap = new Map([['Map', { name: 'I am a map', phone: '213-555-1234' }]])
-    const secondMap = new Map([['Map', { name: 'I am a map', phone: '213-555-1234' }]])
-    const thirdMap = new Map([
+    const firstMap = new Map([
+      ['Map', { name: 'I am a map', phone: '213-555-1234' }]
+    ])
+    const secondMap = new Map([
+      ['Map', { name: 'I am a map', phone: '213-555-1234' }]
+    ])
+    const thirdMap = new Map<any, any>([
       ['Map', { name: 'I am third map', phone: '213-555-1234' }],
       [1, 1]
     ])
@@ -80,25 +105,37 @@ describe('DeepEquals', () => {
   })
 
   it('Should compare Sets', () => {
-    const firstSet = new Set(['1', { name: 'I am a set', phone: '213-555-1234' }])
-    const secondSet = new Set(['1', { name: 'I am a set', phone: '213-555-1234' }])
-    const thirdSet = new Set(
-      ['2', { name: 'I am another', phone: '213-555-1234' }, 2]
-    )
+    const firstSet = new Set([
+      '1',
+      { name: 'I am a set', phone: '213-555-1234' }
+    ])
+    const secondSet = new Set([
+      '1',
+      { name: 'I am a set', phone: '213-555-1234' }
+    ])
+    const thirdSet = new Set([
+      '2',
+      { name: 'I am another', phone: '213-555-1234' },
+      2
+    ])
 
     expect(deepEquals(firstSet, secondSet)).toBe(true)
     expect(deepEquals(firstSet, thirdSet)).toBe(false)
   })
 
   it('Should compare Dates', () => {
-    expect(deepEquals(
-      new Date('2023-01-04T00:00:00.000Z'),
-      new Date('2023-01-04T00:00:00.000Z')
-    )).toBe(true)
+    expect(
+      deepEquals(
+        new Date('2023-01-04T00:00:00.000Z'),
+        new Date('2023-01-04T00:00:00.000Z')
+      )
+    ).toBe(true)
 
-    expect(deepEquals(
-      new Date('2023-01-04T00:00:00.000Z'),
-      new Date('2023-01-05T00:00:00.000Z')
-    )).toBe(false)
+    expect(
+      deepEquals(
+        new Date('2023-01-04T00:00:00.000Z'),
+        new Date('2023-01-05T00:00:00.000Z')
+      )
+    ).toBe(false)
   })
 })

@@ -1,0 +1,34 @@
+{
+  "env": {
+    "jest": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:prettier/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off"
+  },
+  "overrides": [
+    {
+      "files": ["src"],
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      }
+    },
+    {
+      "files": ["./*.js"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    }
+  ]
+}

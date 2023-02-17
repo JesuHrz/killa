@@ -8,7 +8,10 @@ const prePublish = () => {
   try {
     const readmePath = path.join(process.cwd(), 'README.md')
     const readmeFile = fs.readFileSync(readmePath, 'utf8')
-    const updatedFile = readmeFile.replaceAll(/\killa@([^/]+)/g, `killa@${version}`)
+    const updatedFile = readmeFile.replaceAll(
+      /\killa@([^/]+)/g,
+      `killa@${version}`
+    )
 
     fs.writeFileSync(readmePath, updatedFile)
   } catch (err) {
