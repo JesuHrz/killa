@@ -1,8 +1,8 @@
 {
   "name": "killa",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "State management for Vanilla and React",
-  "main": "./dist/index.js",
+  "main": "./dist/cjs/index.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -10,21 +10,21 @@
         "default": "./dist/esm/index.js"
       },
       "module": "./dist/esm/index.js",
-      "default": "./dist/index.js"
+      "default": "./dist/cjs/index.js"
     },
     "./react": {
       "import": {
         "default": "./dist/esm/react.js"
       },
       "module": "./dist/esm/react.js",
-      "default": "./dist/react.js"
+      "default": "./dist/cjs/react.js"
     },
     "./deep-equals": {
       "import": {
         "default": "./dist/esm/utils/deep-equals.js"
       },
       "module": "./dist/esm/utils/deep-equals.js",
-      "default": "./dist/utils/deep-equals.js"
+      "default": "./dist/cjs/utils/deep-equals.js"
     }
   },
   "files": [

@@ -9,19 +9,17 @@ export interface Options {
   compare?: (a: any, b: any) => boolean
 }
 
-export type State<T> = Partial<T> | T
-
 export type Selector<T> = (state: T) => any
 
 export interface Subscriber<T> {
-  (state: State<T>, prevState: State<T>): void
-  SUBSCRIBER?: symbol
-  SELECTOR_STATE?: Partial<T>
-  SELECTOR?: Selector<T>
+  (state: T, prevState: T): void
+  $$subscriber?: symbol
+  $$selectorState?: T
+  $$selector?: Selector<T>
 }
 
-export type Store<T extends Record<string, any> = Record<string, any>> = {
-  STORE: symbol
+export type Store<T extends Record<string, any> = any> = {
+  $$store: symbol
   getState: () => T
   setState: (fn: Selector<T>, force?: boolean) => void
   subscribe: (
@@ -30,7 +28,7 @@ export type Store<T extends Record<string, any> = Record<string, any>> = {
   ) => () => boolean
 }
 
-export function createStore<T extends Record<string, any>>(
+export function createStore<T extends Record<string, any> = any>(
   initialState: T = Object.assign({}),
   options: Options = {}
 ) {
@@ -57,12 +55,12 @@ export function createStore<T extends Record<string, any>>(
         const _prevState = clone(prevState)
         const _newState = getState()
 
-        if (subscriber.SUBSCRIBER && subscriber.SELECTOR) {
-          const selectorState = subscriber.SELECTOR_STATE
-          const nextselectorState = subscriber.SELECTOR(state)
+        if (subscriber.$$subscriber && subscriber.$$selector) {
+          const selectorState = subscriber.$$selectorState
+          const nextselectorState = subscriber.$$selector(state)
 
           if (!compare(selectorState, nextselectorState)) {
-            subscriber.SELECTOR_STATE = nextselectorState
+            subscriber.$$selectorState = nextselectorState
             subscriber(_newState, _prevState)
           }
 
@@ -76,9 +74,9 @@ export function createStore<T extends Record<string, any>>(
 
   const subscribe: Store<T>['subscribe'] = (subscriber, selector) => {
     if (typeof selector === 'function') {
-      subscriber.SUBSCRIBER = SYMBOL_SUBSCRIBER
-      subscriber.SELECTOR_STATE = selector(state)
-      subscriber.SELECTOR = selector
+      subscriber.$$subscriber = SYMBOL_SUBSCRIBER
+      subscriber.$$selectorState = selector(state)
+      subscriber.$$selector = selector
     }
 
     subscribers.add(subscriber)
@@ -86,7 +84,7 @@ export function createStore<T extends Record<string, any>>(
   }
 
   const store = {
-    STORE: SYMBOL_STORE,
+    $$store: SYMBOL_STORE,
     getState,
     setState,
     subscribe

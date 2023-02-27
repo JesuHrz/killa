@@ -65,10 +65,14 @@ const Counter = ({
 }
 
 describe('React', () => {
-  let store: Store
+  let store: Store<{ counter: number; filter: string }>
 
   beforeEach(() => {
-    store = killa({ counter: 1, filter: '' })
+    store = killa({
+      counter: 1,
+      filter: ''
+    })
+
     cleanup()
   })
 
@@ -98,7 +102,7 @@ describe('React', () => {
     }
 
     expect(() => render(<Component />)).toThrow(
-      'Provide a store valid for killa.'
+      'Provide a valid store for useStore.'
     )
   })
 
