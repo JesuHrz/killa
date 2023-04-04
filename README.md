@@ -13,13 +13,13 @@ npm install killa
 To use directly vanilla minified version in the browser:
 
 ```html
-<script src="https://unpkg.com/killa@1.1.0/dist/killa.min.js"></script>
+<script src="https://unpkg.com/killa@1.2.0/dist/killa.min.js"></script>
 ```
 
 Or from jsdelivr:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/killa@1.1.0/dist/killa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/killa@1.2.0/dist/killa.min.js"></script>
 ```
 
 ### How to create your first store

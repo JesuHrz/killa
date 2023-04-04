@@ -64,6 +64,36 @@ describe('Vanilla', () => {
     })
   })
 
+  it('Should just mutate the internal state using the setState method', () => {
+    const initalState = { count: 0 }
+    const store = killa<{ count: number }>(initalState)
+    const state = store.getState()
+    const expectedState = { count: 1 }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    state.foo = 'foo'
+
+    expect(state).not.toBe(initalState)
+    expect(state).not.toEqual(expectedState)
+
+    store.setState((state) => {
+      expect(state).toEqual(initalState)
+      expect(state).not.toBe(initalState)
+      expect(state).not.toBe(store.getState())
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      state.bar = 'bar'
+
+      return {
+        count: 1
+      }
+    })
+
+    expect(store.getState()).toEqual(expectedState)
+  })
+
   it('Should call the global subscriber when updating the state', () => {
     const initalState = { count: 0 }
     const store = killa<{ count: number }>(initalState)
@@ -224,5 +254,22 @@ describe('Vanilla', () => {
 
     expect(compare).toHaveBeenCalledTimes(1)
     expect(firstSubscribe).toHaveBeenCalledTimes(1)
+  })
+
+  it('Should apply middlewares', () => {
+    const middleware = jest.fn()
+    const store = killa({ count: 0, text: '' }, { use: [middleware] })
+
+    expect(middleware).toHaveBeenCalledTimes(1)
+    expect(middleware).toHaveBeenCalledWith(store)
+  })
+
+  it('Should fail if use option is not an array', () => {
+    const middleware = jest.fn()
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    killa({ count: 0, text: '' }, { use: '' })
+
+    expect(middleware).not.toBeCalled()
   })
 })

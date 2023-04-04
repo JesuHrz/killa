@@ -14,12 +14,12 @@ const useSyncExternalStore =
 export const useStore = <T extends Record<string, any>>(
   store: Store<T>,
   selector: Selector<T> = (state) => state
-) => {
+): [Partial<T>, Store<T>['setState']] => {
   if (store.$$store !== SYMBOL_STORE) {
     throw new Error('Provide a valid store for useStore.')
   }
 
-  const state = useSyncExternalStore(
+  const state: T = useSyncExternalStore(
     store.subscribe,
     store.getState,
     store.getState,
@@ -29,8 +29,5 @@ export const useStore = <T extends Record<string, any>>(
 
   useDebugValue(state)
 
-  return {
-    state: state,
-    setState: store.setState
-  }
+  return [state, store.setState]
 }

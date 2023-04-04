@@ -5,8 +5,10 @@ import { deepEquals, isObject } from './utils/deep-equals'
 import { SYMBOL_STORE, SYMBOL_SUBSCRIBER } from './utils/constants'
 
 // Types
-export interface Options {
+export interface Options<T> {
   compare?: (a: any, b: any) => boolean
+  clone?: (state: T) => any
+  use?: ((store: Store<T>) => void)[]
 }
 
 export type Selector<T> = (state: T) => any
@@ -18,10 +20,11 @@ export interface Subscriber<T> {
   $$selector?: Selector<T>
 }
 
-export type Store<T extends Record<string, any> = any> = {
+export type Store<T = Record<string, any>> = {
+  [key: string]: any
   $$store: symbol
   getState: () => T
-  setState: (fn: Selector<T>, force?: boolean) => void
+  setState: (fn: (state: T) => Partial<T>, force?: boolean) => void
   subscribe: (
     subscriber: Subscriber<T>,
     selector?: Selector<T>
@@ -30,7 +33,7 @@ export type Store<T extends Record<string, any> = any> = {
 
 export function createStore<T extends Record<string, any> = any>(
   initialState: T = Object.assign({}),
-  options: Options = {}
+  options: Options<T> = {}
 ) {
   if (!isObject(initialState)) throw new Error('Store must be an object.')
 
@@ -38,18 +41,19 @@ export function createStore<T extends Record<string, any> = any>(
   let state = clone(initialState) as T
 
   const compare =
-    typeof options?.compare === 'function' ? options?.compare : deepEquals
+    typeof options?.compare === 'function' ? options.compare : deepEquals
 
   const getState: Store<T>['getState'] = () => clone(state)
 
   const setState: Store<T>['setState'] = (fn, force = false) => {
-    let newState = fn(state)
+    const newState = fn(getState()) || {}
 
     if (!compare(state, newState)) {
       const prevState = state
 
-      newState = !Object.keys(newState).length ? (initialState as T) : newState
-      state = force ? Object.assign({}) : Object.assign(getState(), newState)
+      state = force
+        ? Object.assign({})
+        : Object.assign(getState(), clone(newState))
 
       subscribers.forEach((subscriber) => {
         const _prevState = clone(prevState)
@@ -90,7 +94,15 @@ export function createStore<T extends Record<string, any> = any>(
     subscribe
   }
 
-  return Object.freeze(store)
+  if (options.use && Array.isArray(options.use)) {
+    options.use.forEach((middleware) => middleware(store))
+  }
+
+  if (process.env.NODE_ENV !== 'test') {
+    return Object.freeze(store)
+  }
+
+  return store
 }
 
 export default createStore

@@ -1,20 +1,29 @@
 import React from 'react'
 import killa, { useStore } from 'killa'
+import { persist } from 'killa/middleware'
 import reactLogo from './assets/react.svg'
 import './App.css'
 
-const store = killa({ counter: 0, filter: '' })
+const store = killa(
+  { counter: 0, filter: '' },
+  {
+    use: [
+      persist({ name: 'killa-persist' })
+    ]
+  }
+)
 
 const Counter = () => {
-  const { state } = useStore(store, (state) => {
+  const [state, setState] = useStore(store, (state) => {
     return {
       counter: state.counter,
-      filter: state.filter
+      filter: state.filter,
+      subobject: state.subobject
     }
   })
 
   const handleCounter = () => {
-    store.setState((state) => {
+    setState(() => {
       return {
         ...state,
         counter: state.counter + 1

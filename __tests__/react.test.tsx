@@ -43,7 +43,7 @@ const Counter = ({
   label?: string
   onCounter?: ((state: any) => void) | undefined
 }) => {
-  const { state, setState } = useStore(store, (state) => {
+  const [state, setState] = useStore(store, (state) => {
     return {
       counter: state.counter,
       filter: state.filter
@@ -150,7 +150,7 @@ describe('React', () => {
     const { result } = renderHook(() => {
       const countRef = useRef(0)
 
-      const { setState } = useStore(store, (state) => {
+      const [_, setState] = useStore(store, (state) => {
         return {
           counter: state.counter,
           filter: state.filter

@@ -6,7 +6,7 @@ const buildForCustomEnvironment = async ({
   format = 'cjs',
   ...options
 } = {}) => {
-  const entryPoints = glob.sync(path.resolve(process.cwd(), 'src/**/*.ts'))
+  const entryPoints = glob.sync(path.join(process.cwd(), 'src/**/*.ts'))
 
   const result = await esbuild.build({
     entryPoints,
@@ -21,16 +21,17 @@ const buildForCustomEnvironment = async ({
   console.log(`Build for ${format.toUpperCase()} 🚀`, result)
 }
 
-const buildForBrowser = async () => {
+const buildForBrowser = async ({ output, entryPoint, ...options }) => {
   const result = await esbuild.build({
-    entryPoints: ['./src/core.js'],
+    entryPoints: [entryPoint],
     bundle: true,
-    outfile: 'dist/killa.min.js',
+    outfile: `dist/umd/${output}.min.js`,
     minify: true,
-    globalName: 'window.killa',
+    globalName: `globalThis.${output}`,
     platform: 'browser',
     format: 'iife',
-    target: ['chrome58', 'edge16', 'firefox57', 'safari11', 'node12']
+    target: ['chrome58', 'edge16', 'firefox57', 'safari11', 'node12'],
+    ...options
   })
 
   console.log('Build for Browser 🚀', result)
@@ -39,7 +40,18 @@ const buildForBrowser = async () => {
 const init = async () => {
   await buildForCustomEnvironment({ format: 'cjs' })
   await buildForCustomEnvironment({ format: 'esm' })
-  await buildForBrowser()
+
+  const allEntryPoints = [
+    { output: 'killa', entryPoint: './src/core.ts' },
+    {
+      output: 'killaMiddlewares',
+      entryPoint: './src/middlewares'
+    }
+  ]
+
+  for (let i = 0; i < allEntryPoints.length; i++) {
+    await buildForBrowser(allEntryPoints[i])
+  }
 }
 
 init()

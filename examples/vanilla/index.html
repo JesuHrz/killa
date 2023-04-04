@@ -10,18 +10,25 @@
     <button class="js-increment">+1</button>
     <button class="js-reset">Restore to inital value</button>
     <button class="js-reset-from-scratch">Restore from scratch</button>
-    <script src="../../dist/killa.min.js"></script>
+    <script src="../../dist/umd/killa.min.js"></script>
+    <script src="../../dist/umd/killaMiddlewares.min.js"></script>
     <script>
       const killa = window.killa
+      const persist = window.killaMiddlewares.persist
 
       const $text = document.querySelector('.js-counter')
       const $button = document.querySelector('.js-increment')
       const $restoreOne = document.querySelector('.js-reset')
       const $restoreTwo = document.querySelector('.js-reset-from-scratch')
 
-      const store = killa.createStore({ counter: 0, text: '', filter: '' })
+      const store = killa.createStore(
+        { counter: 0, text: '', filter: '' },
+        { use: [persist({ name: 'vanilla' })] }
+      )
 
       window.addEventListener('DOMContentLoaded', () => {
+        $text.innerHTML = store.getState().counter
+
         store.subscribe((state, prevState) => {
           console.log('Global subscriber', store.getState())
         })

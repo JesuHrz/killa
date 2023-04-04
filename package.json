@@ -1,6 +1,6 @@
 {
   "name": "killa",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "State management for Vanilla and React",
   "main": "./dist/cjs/index.js",
   "exports": {
@@ -25,6 +25,13 @@
       },
       "module": "./dist/esm/utils/deep-equals.js",
       "default": "./dist/cjs/utils/deep-equals.js"
+    },
+    "./middleware": {
+      "import": {
+        "default": "./dist/esm/middleware/index.js"
+      },
+      "module": "./dist/esm/middleware/index.js",
+      "default": "./dist/cjs/middleware/index.js"
     }
   },
   "files": [
@@ -32,13 +39,13 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build:watch": "npx nodemon --exec 'npm run build'",
+    "build:watch": "npx nodemon  --ext 'ts,js' --exec 'npm run build'",
     "build": "npm run prebuild && node esbuild.config.js",
     "prebuild": "shx rm -rf dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest --collectCoverage",
-    "test:watch": "jest --watchAll",
+    "test": "NODE_ENV=test jest --collectCoverage",
+    "test:watch": "NODE_ENV=test jest --watchAll",
     "prepare": "npm run lint && npm run test && node pre-publish.js"
   },
   "engines": {
