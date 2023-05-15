@@ -1,6 +1,6 @@
 {
   "name": "killa",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "State management for Vanilla and React",
   "main": "./dist/cjs/index.js",
   "exports": {
@@ -46,7 +46,7 @@
     "lint:fix": "eslint . --fix",
     "test": "NODE_ENV=test jest --collectCoverage",
     "test:watch": "NODE_ENV=test jest --watchAll",
-    "prepare": "npm run lint && npm run test && node pre-publish.js"
+    "prepare": "npm run lint && npm run test && npm run build && node pre-publish.js"
   },
   "engines": {
     "node": ">=12"

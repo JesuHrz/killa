@@ -1,6 +1,6 @@
 import { createStore, Store } from '../src'
 import { SYMBOL_PERSIST } from '../src/utils/constants'
-import { persist } from '../src/middlewares/persist'
+import { persist } from '../src/middleware/persist'
 
 const createMockedStorage = (persistedState: Record<string, any> | null) => {
   let state = persistedState

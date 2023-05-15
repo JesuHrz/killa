@@ -3,7 +3,7 @@
 </p>
 
 # KILLA
-Killa is a small and lightweight state management library for vanilla and React.
+Killa is a small and lightweight state management library for vanilla and React inspired by Zustand and SWR.
 
 ```bash
 npm install killa
@@ -13,13 +13,13 @@ npm install killa
 To use directly vanilla minified version in the browser:
 
 ```html
-<script src="https://unpkg.com/killa@1.2.0/dist/killa.min.js"></script>
+<script src="https://unpkg.com/killa@1.3.0/dist/killa.min.js"></script>
 ```
 
 Or from jsdelivr:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/killa@1.2.0/dist/killa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/killa@1.3.0/dist/killa.min.js"></script>
 ```
 
 ### How to create your first store
@@ -154,6 +154,27 @@ const Counter = () => {
     </div>
   )
 }
+```
+
+## Middlewares
+### Persist
+
+```js
+import { persist } from 'killa/middlewares'
+
+const store = killa(
+  { counter: 0, filter: '' },
+  {
+    use: [
+      persist({
+        name: 'killa-persist',
+        storage
+      })
+    ]
+  }
+)
+
+store.getState() // { counter: 0 }
 ```
 
 ## Support

@@ -1,6 +1,6 @@
 import React from 'react'
 import killa, { useStore } from 'killa'
-import { persist } from 'killa/middleware'
+import { persist } from 'killa/middlewares'
 import reactLogo from './assets/react.svg'
 import './App.css'
 

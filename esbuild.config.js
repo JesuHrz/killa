@@ -30,7 +30,7 @@ const buildForBrowser = async ({ output, entryPoint, ...options }) => {
     globalName: `globalThis.${output}`,
     platform: 'browser',
     format: 'iife',
-    target: ['chrome58', 'edge16', 'firefox57', 'safari11', 'node12'],
+    target: ['chrome58', 'edge18', 'firefox57', 'safari11', 'node12'],
     ...options
   })
 
@@ -45,7 +45,7 @@ const init = async () => {
     { output: 'killa', entryPoint: './src/core.ts' },
     {
       output: 'killaMiddlewares',
-      entryPoint: './src/middlewares'
+      entryPoint: './src/middleware'
     }
   ]
 
