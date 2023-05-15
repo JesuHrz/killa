@@ -13,13 +13,13 @@ npm install killa
 To use directly vanilla minified version in the browser:
 
 ```html
-<script src="https://unpkg.com/killa@1.3.0/dist/killa.min.js"></script>
+<script src="https://unpkg.com/killa@1.4.0/dist/killa.min.js"></script>
 ```
 
 Or from jsdelivr:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/killa@1.3.0/dist/killa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/killa@1.4.0/dist/killa.min.js"></script>
 ```
 
 ### How to create your first store
@@ -176,6 +176,9 @@ const store = killa(
 
 store.getState() // { counter: 0 }
 ```
+### Auto Revalidate
+
+<img src="killa-revalidate.gif" width="600" />
 
 ## Support
 React >= 16.8, Chrome 58, Firefox 57, IE 11, Edge 16, Safari  11, & Node.js 12.

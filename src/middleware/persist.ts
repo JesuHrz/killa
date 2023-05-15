@@ -6,7 +6,9 @@ import {
   serialize,
   deserialize,
   merge,
-  messageError
+  messageError,
+  addWindowEvent,
+  removeWindowEvent
 } from '../utils/helpers'
 
 interface CustomStorage<T> {
@@ -43,9 +45,11 @@ const normalizeStorage = <T>(
 }
 
 const initRevalidateOnFocus = (listener: () => void) => {
+  addWindowEvent('focus', listener)
   addDocumentEvent('visibilitychange', listener)
   return () => {
     removeDocumentEvent('visibilitychange', listener)
+    removeWindowEvent('visibilitychange', listener)
   }
 }
 
@@ -56,7 +60,7 @@ export const persist =
       storage: normalizeStorage(() => window.localStorage as CustomStorage<T>),
       merge,
       revalidate: true,
-      revalidateTimeout: 300,
+      revalidateTimeout: 200,
       ...config
     }
     const storageName = config.name
