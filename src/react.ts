@@ -22,7 +22,7 @@ export const useStore = <T extends Record<string, any>>(
   const state: T = useSyncExternalStore(
     store.subscribe,
     store.getState,
-    store.getState,
+    store.getServerState || store.getState,
     selector,
     deepEquals
   )

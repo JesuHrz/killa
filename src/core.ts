@@ -29,6 +29,7 @@ export type Store<T = Record<string, any>> = {
     subscriber: Subscriber<T>,
     selector?: Selector<T>
   ) => () => boolean
+  getServerState: () => T
 }
 
 export function createStore<T extends Record<string, any> = any>(
@@ -91,7 +92,8 @@ export function createStore<T extends Record<string, any> = any>(
     $$store: SYMBOL_STORE,
     getState,
     setState,
-    subscribe
+    subscribe,
+    getServerState: () => initialState
   }
 
   if (options.use && Array.isArray(options.use)) {
