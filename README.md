@@ -160,7 +160,7 @@ const Counter = () => {
 ### Persist
 
 ```js
-import { persist } from 'killa/middlewares'
+import { persist } from 'killa/middleware'
 
 const store = killa(
   { counter: 0, filter: '' },
