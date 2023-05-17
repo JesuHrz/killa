@@ -1,1 +1,1 @@
-export { persist } from './persist'
+export { persist, normalizeStorage } from './persist'
