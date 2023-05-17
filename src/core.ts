@@ -16,11 +16,11 @@ export type Selector<T> = (state: T) => any
 export interface Subscriber<T> {
   (state: T, prevState: T): void
   $$subscriber?: symbol
-  $$selectorState?: T
+  $$selectorState?: unknown
   $$selector?: Selector<T>
 }
 
-export type Store<T = Record<string, any>> = {
+export type Store<T> = {
   [key: string]: any
   $$store: symbol
   getState: () => T
@@ -32,7 +32,7 @@ export type Store<T = Record<string, any>> = {
   getServerState: () => T
 }
 
-export function createStore<T extends Record<string, any> = any>(
+export function createStore<T extends Record<string, any>>(
   initialState: T = Object.assign({}),
   options: Options<T> = {}
 ) {

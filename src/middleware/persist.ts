@@ -6,27 +6,50 @@ import {
   serialize,
   deserialize,
   merge,
-  messageError,
   addWindowEvent,
   removeWindowEvent
 } from '../utils/helpers'
 
-interface CustomStorage<T> {
+/** Killa Storage API interface. */
+export interface CustomStorage<T> {
+  /**
+   * Returns the current value associated with the given key,
+   * or null if the given key does not exist.
+   **/
   getItem: (name: string) => T | null
+  /**
+   * Sets the value of the pair identified by key to value, creating a
+   * new key/value pair if none existed for key previously.
+   */
   setItem: (name: string, value: unknown) => void
+  /**
+   * Removes the key/value pair with the given key, if a key/value pair with
+   * the given key exists.
+   */
   removeItem: (name: string) => void
 }
 
-interface PersistConfig<T> {
-  name: string
-  storage?: CustomStorage<T>
+export interface PersistConfig<T> {
+  /** Storage name (unique) */
+  name?: string
+  /**
+   * @default () => localStorage
+   */
+  storage?: CustomStorage<T> | (() => CustomStorage<T>)
   merge?: (state: T, persistedState: T) => T
+  /**
+   * Enable Revalidate mode
+   * @default true
+   */
   revalidate?: boolean
+  /**
+   *  Timeout to trigger the revalidate event in milliseconds
+   * @default 200
+   */
+  revalidateTimeout?: number
 }
 
-const normalizeStorage = <T>(
-  storage: () => CustomStorage<T>
-): CustomStorage<T> | null => {
+export const normalizeStorage = <T>(storage: () => CustomStorage<T>) => {
   try {
     const _storage = storage()
     if (!_storage) return null
@@ -38,47 +61,64 @@ const normalizeStorage = <T>(
       },
       setItem: (name, value) => _storage.setItem(name, serialize(value)),
       removeItem: (name) => _storage.removeItem(name)
-    }
+    } as CustomStorage<T>
   } catch (e) {
     return null
   }
 }
 
-const initRevalidateOnFocus = (listener: () => void) => {
+export const validateStorage = <T>(
+  storage: CustomStorage<T> | (() => CustomStorage<T>) | null
+) => {
+  if (typeof storage === 'function') {
+    try {
+      return storage()
+    } catch (error) {
+      return null
+    }
+  }
+
+  return storage
+}
+
+export const initRevalidateOnFocus = (listener: () => void) => {
   addWindowEvent('focus', listener)
   addDocumentEvent('visibilitychange', listener)
   return () => {
+    removeWindowEvent('focus', listener)
     removeDocumentEvent('visibilitychange', listener)
-    removeWindowEvent('visibilitychange', listener)
   }
 }
 
 export const persist =
-  <T extends Record<string, any>>(config: PersistConfig<T>) =>
+  <T>(config: PersistConfig<T>) =>
   (store: Store<T>) => {
     const baseConfig = {
+      name: '',
       storage: normalizeStorage(() => window.localStorage as CustomStorage<T>),
       merge,
       revalidate: true,
       revalidateTimeout: 200,
       ...config
     }
-    const storageName = config.name
-    const storage = baseConfig.storage
+    const storageName = baseConfig.name
+    const storage = validateStorage(baseConfig.storage)
 
     if (store?.$$store !== SYMBOL_STORE) {
-      messageError('Provide a valid killa store to persist your store.')
-      return false
+      console.error(
+        '[Killa Persist] Provide a valid killa store to persist your store.'
+      )
+      return
     }
 
     if (!storageName) {
-      messageError('Provide a name to persist your store.')
-      return false
+      console.error('[Killa Persist] Provide a name to persist your store.')
+      return
     }
 
     if (!storage) {
-      messageError('Provide a storage to persist your store.')
-      return false
+      console.error('[Killa Persist] Provide a storage to persist your store.')
+      return null
     }
 
     const _setState = store.setState
@@ -86,11 +126,11 @@ export const persist =
 
     store.setState = (state, force) => {
       _setState(state, force)
-      storage.setItem(storageName, store.getState())
+      storage?.setItem(storageName, store.getState())
     }
 
     const hydrate = () => {
-      const persistedState = storage.getItem(storageName)
+      const persistedState = storage?.getItem(storageName)
 
       store.setState(() => {
         return {

@@ -159,26 +159,45 @@ const Counter = () => {
 ## Middlewares
 ### Persist
 
+Killa Persist uses `localStorage` by default.
+
 ```js
-import { persist } from 'killa/middleware'
+import { persist } from 'killa/persist'
 
 const store = killa(
   { counter: 0, filter: '' },
   {
     use: [
-      persist({
-        name: 'killa-persist',
-        storage
-      })
+      persist({ name: 'killa-persist' })
     ]
   }
 )
 
 store.getState() // { counter: 0 }
 ```
+
+
+If you wish to use other storage you can do so by using the `normalizeStorage` method to normalize the storage supported by Killa Persist.
+
+```js
+import { persist, normalizeStorage } from 'killa/persist'
+
+const store = killa(
+  { counter: 0, filter: '' },
+  {
+    use: [
+      persist({ name: 'killa-persist' }),
+      storage: normalizeStorage(() => sessionStorage)
+    ]
+  }
+)
+
+store.getState() // { counter: 0 }
+```
+
 ### Auto Revalidate
 
 <img src="killa-revalidate.gif" width="600" />
 
 ## Support
-React >= 16.8, Chrome 58, Firefox 57, IE 11, Edge 16, Safari  11, & Node.js 12.
+React >= 16.8, Chrome 58, Firefox 57, IE 11, Edge 18, Safari  11, & Node.js 12.
