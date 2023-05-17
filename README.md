@@ -199,8 +199,10 @@ const store = killa(
   { counter: 0, filter: '' },
   {
     use: [
-      persist({ name: 'killa-persist' }),
-      storage: normalizeStorage(() => sessionStorage)
+      persist({
+        name: 'killa-persist',
+        storage: normalizeStorage(() => sessionStorage)
+      })
     ]
   }
 )
