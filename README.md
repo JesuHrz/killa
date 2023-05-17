@@ -13,13 +13,13 @@ npm install killa
 To use directly vanilla minified version in the browser:
 
 ```html
-<script src="https://unpkg.com/killa@1.5.0/dist/killa.min.js"></script>
+<script src="https://unpkg.com/killa@1.5.1/dist/umd/killa.min.js"></script>
 ```
 
 Or from jsdelivr:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/killa@1.5.0/dist/killa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/killa@1.5.1/dist/umd/killa.min.js"></script>
 ```
 
 ### How to create your first store
@@ -157,6 +157,19 @@ const Counter = () => {
 ```
 
 ## Middlewares
+To use directly vanilla minified version in the browser:
+
+```html
+<script src="https://unpkg.com/killa@1.5.1/dist/umd/killaMiddlewares.min.js"></script>
+```
+
+Or from jsdelivr:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/killa@1.5.1/dist/umd/killaMiddlewares.min.js"></script>
+```
+
+For vanilla, you can access to the middlewares using: `window.killaMiddlewares`
 ### Persist
 
 Killa Persist uses `localStorage` by default.
