@@ -90,9 +90,14 @@ export const initRevalidateOnFocus = (listener: () => void) => {
   }
 }
 
+export interface Persist {
+  /** Storage name (unique) */
+  name?: string
+}
+
 export const persist =
   <T>(config: PersistConfig<T>) =>
-  (store: Store<T>) => {
+  (store: Store<T, { persist: Persist }>) => {
     const baseConfig = {
       name: '',
       storage: normalizeStorage(() => window.localStorage as CustomStorage<T>),
@@ -153,7 +158,7 @@ export const persist =
 
     hydrate()
 
-    store.persist = {
+    store.middlewares.persist = {
       $$persist: SYMBOL_PERSIST,
       name: storageName,
       destroy: () => {

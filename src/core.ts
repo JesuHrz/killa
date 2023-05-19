@@ -5,10 +5,10 @@ import { deepEquals, isObject } from './utils/deep-equals'
 import { SYMBOL_STORE, SYMBOL_SUBSCRIBER } from './utils/constants'
 
 // Types
-export interface Options<T> {
+export interface Options<T, U = unknown> {
   compare?: (a: any, b: any) => boolean
   clone?: (state: T) => any
-  use?: ((store: Store<T>) => void)[]
+  use?: ((store: Store<T, U>) => U)[]
 }
 
 export type Selector<T> = (state: T) => any
@@ -20,8 +20,8 @@ export interface Subscriber<T> {
   $$selector?: Selector<T>
 }
 
-export type Store<T> = {
-  [key: string]: any
+export interface Store<T, U = unknown> {
+  // [key: string]: any
   $$store: symbol
   getState: () => T
   setState: (fn: (state: T) => Partial<T>, force?: boolean) => void
@@ -30,6 +30,7 @@ export type Store<T> = {
     selector?: Selector<T>
   ) => () => boolean
   getServerState: () => T
+  middlewares?: [{ [x: string]: U }]
 }
 
 export function createStore<T extends Record<string, any>>(
@@ -93,11 +94,20 @@ export function createStore<T extends Record<string, any>>(
     getState,
     setState,
     subscribe,
-    getServerState: () => initialState
+    getServerState: () => initialState,
+    middlewares: []
   }
 
   if (options.use && Array.isArray(options.use)) {
-    options.use.forEach((middleware) => middleware(store))
+    options.use.forEach((middleware) => {
+      const _middleware = middleware(store)
+
+      store.middlewares[
+        {
+          [middleware.name]: _middleware
+        }
+      ]
+    })
   }
 
   if (process.env.NODE_ENV !== 'test') {

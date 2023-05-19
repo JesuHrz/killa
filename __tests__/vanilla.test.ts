@@ -1,4 +1,5 @@
 import killa, { createStore } from '../src'
+import { persist } from '../src/middleware/persist'
 
 describe('Vanilla', () => {
   it('Should export createStore as default export and named export', () => {
@@ -259,6 +260,21 @@ describe('Vanilla', () => {
   it('Should apply middlewares', () => {
     const middleware = jest.fn()
     const store = killa({ count: 0, text: '' }, { use: [middleware] })
+
+    expect(middleware).toHaveBeenCalledTimes(1)
+    expect(middleware).toHaveBeenCalledWith(store)
+  })
+
+  it('Should apply middlewares', () => {
+    const middleware = jest.fn()
+    const store = killa(
+      { count: 0 },
+      {
+        use: [persist({ name: 'killa-persist' })]
+      }
+    )
+
+    store
 
     expect(middleware).toHaveBeenCalledTimes(1)
     expect(middleware).toHaveBeenCalledWith(store)
