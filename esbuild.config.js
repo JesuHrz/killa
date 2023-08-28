@@ -1,6 +1,7 @@
 const path = require('path')
 const glob = require('glob')
 const esbuild = require('esbuild')
+const { dtsPlugin } = require('esbuild-plugin-d.ts')
 
 const buildForCustomEnvironment = async ({
   format = 'cjs',
@@ -38,8 +39,13 @@ const buildForBrowser = async ({ output, entryPoint, ...options }) => {
 }
 
 const init = async () => {
-  await buildForCustomEnvironment({ format: 'cjs' })
+  await buildForCustomEnvironment({ format: 'cjs', plugins: [dtsPlugin()] })
   await buildForCustomEnvironment({ format: 'esm' })
+  await buildForCustomEnvironment({
+    format: 'esm',
+    outExtension: { '.js': '.mjs' },
+    plugins: [dtsPlugin()]
+  })
 
   const allEntryPoints = [
     { output: 'killa', entryPoint: './src/core.ts' },

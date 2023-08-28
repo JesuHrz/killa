@@ -1,14 +1,18 @@
 import React from 'react'
-import killa, { useStore } from 'killa'
-import { persist } from 'killa/middleware'
+import { createStore } from 'killa'
+import { useStore } from 'killa/react'
+import { persist } from 'killa/persist'
 import reactLogo from './assets/react.svg'
 import './App.css'
 
-const store = killa(
+const store = createStore(
   { counter: 0, filter: '' },
   {
     use: [
-      persist({ name: 'killa-persist' })
+      persist({
+        name: 'killa-persist',
+        encrypted: true
+      })
     ]
   }
 )
@@ -32,21 +36,19 @@ const Counter = () => {
   }
 
   return (
-    <div className='card'>
+    <div className="card">
       <p>Counter: {state.counter}</p>
-      <button onClick={handleCounter}>
-        Counter +1
-      </button>
+      <button onClick={handleCounter}>Counter +1</button>
     </div>
   )
 }
 
-function App () {
+function App() {
   return (
-    <div className='App'>
+    <div className="App">
       <div>
-        <img src='/vite.svg' className='logo' alt='Vite logo' />
-        <img src={reactLogo} className='logo react' alt='React logo' />
+        <img src="/vite.svg" className="logo" alt="Vite logo" />
+        <img src={reactLogo} className="logo react" alt="React logo" />
       </div>
       <h1>Vite + React + Killa</h1>
       <Counter />

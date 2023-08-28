@@ -10,65 +10,38 @@ import {
   act
 } from '@testing-library/react'
 
-import killa, { useStore, Store } from '../src'
-
-const handleCounter = (state: any) => {
-  return {
-    ...state,
-    counter: state.counter + 1
-  }
-}
-
-const App = ({
-  store,
-  handleCounter
-}: {
-  store: Store
-  handleCounter?: ((state: any) => void) | undefined
-}) => {
-  return (
-    <div>
-      <Counter store={store} onCounter={handleCounter} />
-      <Counter store={store} label="Counter +2" onCounter={handleCounter} />
-    </div>
-  )
-}
-
-const Counter = ({
-  store,
-  label = 'Counter +1',
-  onCounter
-}: {
-  store: Store
-  label?: string
-  onCounter?: ((state: any) => void) | undefined
-}) => {
-  const [state, setState] = useStore(store, (state) => {
-    return {
-      counter: state.counter,
-      filter: state.filter
-    }
-  })
-
-  const handleCounter = () => {
-    if (onCounter) {
-      setState(onCounter)
-    }
-  }
-
-  return (
-    <div>
-      <p>Counter: {state.counter}</p>
-      <button onClick={handleCounter}>{label}</button>
-    </div>
-  )
-}
+import { createStore, Store } from '../src'
+import { useStore } from '../src/react'
 
 describe('React', () => {
   let store: Store<{ counter: number; filter: string }>
 
+  const Counter = ({ label = 'Counter +1' }) => {
+    const [state, setState] = useStore(store, (state) => {
+      return {
+        counter: state.counter,
+        filter: state.filter
+      }
+    })
+
+    const handleCounter = () => {
+      setState((state) => {
+        return {
+          counter: state.counter + 1
+        }
+      })
+    }
+
+    return (
+      <div>
+        <p>Counter: {state.counter}</p>
+        <button onClick={handleCounter}>{label}</button>
+      </div>
+    )
+  }
+
   beforeEach(() => {
-    store = killa({
+    store = createStore({
       counter: 1,
       filter: ''
     })
@@ -77,7 +50,7 @@ describe('React', () => {
   })
 
   it('Should render Counter with initial state', () => {
-    render(<Counter store={store} onCounter={handleCounter} />)
+    render(<Counter />)
     const $counter = screen.getByText(/counter: 1/i)
     expect($counter).toBeInTheDocument()
   })
@@ -92,24 +65,21 @@ describe('React', () => {
     render(<Component />)
   })
 
-  it('Should render Counter with the counter state with initial state', () => {
-    const Component = () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      useStore({})
-
-      return <p>Component</p>
+  it('Should throw a error when providing an invalid store to useStore as param', () => {
+    try {
+      renderHook(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        useStore({})
+      })
+      throw new Error('Should fail because the store is invalid')
+    } catch (error: any) {
+      expect(error.message).toBe('Provide a valid store for useStore.')
     }
-
-    expect(() => render(<Component />)).toThrow(
-      'Provide a valid store for useStore.'
-    )
   })
 
   it('Should update Counter state when clicking on the counter button', () => {
-    const cb = jest.fn(handleCounter)
-
-    render(<Counter store={store} onCounter={cb} />)
+    render(<Counter />)
 
     const $button = screen.getByRole('button')
 
@@ -117,24 +87,36 @@ describe('React', () => {
 
     const $counter = screen.getByText(/counter: 2/i)
 
-    expect(cb).toBeCalledTimes(1)
     expect($counter).toBeInTheDocument()
   })
 
-  it('Should rerender the Counter component when the store is update outside React', () => {
-    render(<Counter store={store} />)
+  it('Should rerender the Counter component when the store is updated', () => {
+    render(<Counter />)
 
     expect(screen.getByText(/counter: 1/i)).toBeInTheDocument()
 
     act(() => {
-      store.setState(handleCounter)
+      store.setState((state) => {
+        return {
+          ...state,
+          counter: state.counter + 1
+        }
+      })
     })
 
     expect(screen.getByText(/counter: 2/i)).toBeInTheDocument()
   })
 
   it('Should rerender second Counter component after updating the store from the first Counter component', () => {
-    render(<App store={store} handleCounter={handleCounter} />)
+    const App = () => {
+      return (
+        <div>
+          <Counter />
+          <Counter label="Counter +2" />
+        </div>
+      )
+    }
+    render(<App />)
 
     const $buttons = screen.getAllByRole('button')
 
