@@ -13,12 +13,12 @@ npm install killa
 To use directly vanilla minified version in the browser:
 
 ```html
-<script src="https://unpkg.com/killa@1.7.1/dist/umd/killa.min.js"></script>
+<script src="https://unpkg.com/killa@1.7.2/dist/umd/killa.min.js"></script>
 ```
 
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/killa@1.7.1/dist/umd/killa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/killa@1.7.2/dist/umd/killa.min.js"></script>
 ```
 
 ### How to create your first store
@@ -106,7 +106,7 @@ To reset or overwrite your store you need to use the method `resetState`
 
 ```js
 store.resetState() // Reseting to initial state
-store.getState() // { counter: 1, type: '', filter: '' }
+store.getState() // { counter: 0, type: '', filter: '' }
 
 store.resetState({ notes: [] }) // Overwriting all state to the new state
 store.getState() // { notes: [] }
@@ -169,13 +169,13 @@ const Counter = () => {
 To use directly vanilla minified version in the browser:
 
 ```html
-<script src="https://unpkg.com/killa@1.7.1/dist/umd/killaMiddlewares.min.js"></script>
+<script src="https://unpkg.com/killa@1.7.2/dist/umd/killaMiddlewares.min.js"></script>
 ```
 
 Or from jsdelivr:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/killa@1.7.1/dist/umd/killaMiddlewares.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/killa@1.7.2/dist/umd/killaMiddlewares.min.js"></script>
 ```
 
 For vanilla, you can access to the middlewares using: `window.killaMiddlewares`
@@ -199,8 +199,6 @@ const store = createStore(
     ]
   }
 )
-
-store.getState() // { counter: 0 }
 ```
 
 
