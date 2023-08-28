@@ -1,8 +1,8 @@
-import clone from 'clone'
+import clone from 'just-clone'
 
 // Utils
-import { deepEquals, isObject } from './utils/deep-equals'
-import { SYMBOL_STORE, SYMBOL_SUBSCRIBER } from './utils/constants'
+import { deepEquals, isObject } from 'killa/deep-equals'
+import { SYMBOL_STORE, SYMBOL_SUBSCRIBER } from 'killa/constants'
 
 // Types
 export interface Options<T> {
@@ -20,11 +20,10 @@ export interface Subscriber<T> {
   $$selector?: Selector<T>
 }
 
-export type Store<T> = {
-  [key: string]: any
+export interface Store<T = Record<string, any>> {
   $$store: symbol
   getState: () => T
-  setState: (fn: (state: T) => Partial<T>, force?: boolean) => void
+  setState: (fn: (state: T) => T | Partial<T>, force?: boolean) => void
   subscribe: (
     subscriber: Subscriber<T>,
     selector?: Selector<T>
@@ -32,19 +31,24 @@ export type Store<T> = {
   getServerState: () => T
 }
 
-export function createStore<T extends Record<string, any>>(
-  initialState: T = Object.assign({}),
-  options: Options<T> = {}
-) {
-  if (!isObject(initialState)) throw new Error('Store must be an object.')
+type InitializerFn<T> = (
+  getState: Store<T>['getState'],
+  setState: Store<T>['setState']
+) => T
 
+type State = Record<string, any>
+
+export function createStore<T extends State, U = InitializerFn<T> | State>(
+  initializer: U = Object.assign({}),
+  options?: Options<T>
+) {
+  let state: T
   const subscribers = new Set<Subscriber<T>>()
-  let state = clone(initialState) as T
 
   const compare =
     typeof options?.compare === 'function' ? options.compare : deepEquals
 
-  const getState: Store<T>['getState'] = () => clone(state)
+  const getState = () => clone(state)
 
   const setState: Store<T>['setState'] = (fn, force = false) => {
     const newState = fn(getState()) || {}
@@ -53,7 +57,7 @@ export function createStore<T extends Record<string, any>>(
       const prevState = state
 
       state = force
-        ? Object.assign({})
+        ? Object.assign(newState)
         : Object.assign(getState(), clone(newState))
 
       subscribers.forEach((subscriber) => {
@@ -88,15 +92,30 @@ export function createStore<T extends Record<string, any>>(
     return () => subscribers.delete(subscriber)
   }
 
+  const initialState: T =
+    typeof initializer === 'function'
+      ? initializer(getState, setState)
+      : initializer
+
+  const resetState = (state: Partial<T> | null = null) => {
+    const newState = state && isObject(state) ? state : clone(initialState)
+    setState(() => newState, true)
+  }
+
+  if (!isObject(initialState)) throw new Error('Store must be an object.')
+
+  state = clone<T>(initialState)
+
   const store = {
     $$store: SYMBOL_STORE,
     getState,
     setState,
     subscribe,
-    getServerState: () => initialState
+    getServerState: () => initialState,
+    resetState
   }
 
-  if (options.use && Array.isArray(options.use)) {
+  if (options?.use && Array.isArray(options.use)) {
     options.use.forEach((middleware) => middleware(store))
   }
 
@@ -106,5 +125,3 @@ export function createStore<T extends Record<string, any>>(
 
   return store
 }
-
-export default createStore
