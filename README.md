@@ -13,13 +13,12 @@ npm install killa
 To use directly vanilla minified version in the browser:
 
 ```html
-<script src="https://unpkg.com/killa@1.5.1/dist/umd/killa.min.js"></script>
+<script src="https://unpkg.com/killa@1.7.1/dist/umd/killa.min.js"></script>
 ```
 
-Or from jsdelivr:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/killa@1.5.1/dist/umd/killa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/killa@1.7.1/dist/umd/killa.min.js"></script>
 ```
 
 ### How to create your first store
@@ -27,19 +26,10 @@ Or from jsdelivr:
 To create your first store you need to provide an object which will manage your state. **(The internal state is inmutable)**
 
 ```js
-
-// ESM
-import killa from 'killa'
-// or
 import { createStore } from 'killa'
-
-// CJS
-const killa = require('killa')
 // or
 const { createStore } = require('killa')
 
-const store = killa({ counter: 0 })
-// or
 const store = createStore({ counter: 0 })
 ```
 
@@ -47,15 +37,11 @@ const store = createStore({ counter: 0 })
 ### How to access to your store
 
 ```js
-const store = killa({ counter: 0 })
-
 store.getState() // { counter: 0 }
 ```
 
 ### How to update your store
 ```js
-const store = killa({ counter: 0 })
-
 store.setState(() => {
   return {
     counter: 1
@@ -68,13 +54,11 @@ store.getState() // { counter: 1 }
 ### How to subscribe to state events
 
 ```js
-const store = killa({ counter: 0 })
-
-// This subscriber will be called every time any value of the state is updated.
+// This subscriber will be called every time that our state is updated.
 // We could say that this would be a global subscriber.
 store.subscribe((state, prevState) => {
-  console.log('Updated state', state) // { counter: 1 }
-  console.log('Previous state', prevState) // { counter: 0 }
+  console.log(state) // { counter: 1 }
+  console.log(prevState) // { counter: 0 }
 })
 
 store.setState(() => {
@@ -89,25 +73,22 @@ store.getState() // { counter: 1 }
 But you can also subscribe to a specific event:
 
 ```js
-const store = killa({ counter: 0, type: '', filter: '' })
+const store = createStore({ counter: 0, type: '', filter: '' })
 
-// This subscriber will be called after updating the counter state.
+// This subscriber will be called only when the counter state is updated.
 store.subscribe((state, prevState) => {
-  console.log('Updated state', state)
-  // { counter: 1, type: '', filter: '' }
-  console.log('Previous state', prevState)
-  // { counter: 0, type: '', filter: '' }
+  console.log(state) // { counter: 1, type: '', filter: '' }
+  console.log(prevState) // { counter: 0, type: '', filter: '' }
 }, (state) => state.counter)
 
 // This subscriber will be called when the state of counter or filter is updated.
 store.subscribe((state) => {
-  console.log('Counter and filter state subscriber', state.counter)
+  console.log(state) // { counter: 1, type: '', filter: '' }
 }, (state) => ({ counter: state.counter, filter: state.filter }))
 
 // This subscriber will not be called since the type state was not updated.
 store.subscribe((state, prevState) => {
-  console.log('Updated state', state)
-  console.log('Previous state', prevState)
+  console.log(state, prevState)
 }, (state) => state.type)
 
 store.setState((state) => {
@@ -120,15 +101,43 @@ store.setState((state) => {
 store.getState() // { counter: 1, type: '', filter: '' }
 ```
 
+### Resting and overwriting state
+To reset or overwrite your store you need to use the method `resetState`
+
+```js
+store.resetState() // Reseting to initial state
+store.getState() // { counter: 1, type: '', filter: '' }
+
+store.resetState({ notes: [] }) // Overwriting all state to the new state
+store.getState() // { notes: [] }
+```
+
+### Using internal Actions
+You can also initialize your store using `get` and `set` actions to update state using custom method within your store
+
+```js
+const store = createStore((get, set) => {
+  return {
+    count: 1,
+    inc: () => set(() => ({ count: get().count + 1 })),
+    getCount: () => get().count
+  }
+})
+
+store.getState().inc() // Increments count state to 2
+store.getState().getCount() // 2
+```
+
 ## React
 
 ```jsx
-import killa, { useStore } from 'killa'
+import { createStore } from 'killa'
+import { useStore } from 'killa/react'
 
-const store = killa({ counter: 0, type: '', filter: '' })
+const store = createStore({ counter: 0, type: '', filter: '' })
 
 const Counter = () => {
-  // This component will be rendered when counter or filter state changes
+  // This component will only be rendered when counter or filter state changes
   const { state, setState } = useStore(store, (state) => {
     return {
       counter: state.counter,
@@ -160,13 +169,13 @@ const Counter = () => {
 To use directly vanilla minified version in the browser:
 
 ```html
-<script src="https://unpkg.com/killa@1.5.1/dist/umd/killaMiddlewares.min.js"></script>
+<script src="https://unpkg.com/killa@1.7.1/dist/umd/killaMiddlewares.min.js"></script>
 ```
 
 Or from jsdelivr:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/killa@1.5.1/dist/umd/killaMiddlewares.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/killa@1.7.1/dist/umd/killaMiddlewares.min.js"></script>
 ```
 
 For vanilla, you can access to the middlewares using: `window.killaMiddlewares`
@@ -177,11 +186,16 @@ Killa Persist uses `localStorage` by default.
 ```js
 import { persist } from 'killa/persist'
 
-const store = killa(
+const store = createStore(
   { counter: 0, filter: '' },
   {
     use: [
-      persist({ name: 'killa-persist' })
+      persist({
+        name: 'killa-persist',
+        revalidate: false // true by default
+        revalidateTimeout: 300 // 200 by default
+        encrypted: true // false by default
+      })
     ]
   }
 )
@@ -195,12 +209,14 @@ If you wish to use other storage you can do so by using the `normalizeStorage` m
 ```js
 import { persist, normalizeStorage } from 'killa/persist'
 
-const store = killa(
+const store = createStore(
   { counter: 0, filter: '' },
   {
     use: [
-      persist({ name: 'killa-persist' }),
-      storage: normalizeStorage(() => sessionStorage)
+      persist({
+        name: 'killa-persist',
+        storage: normalizeStorage(() => sessionStorage)
+      })
     ]
   }
 )
@@ -208,7 +224,7 @@ const store = killa(
 store.getState() // { counter: 0 }
 ```
 
-### Auto Revalidate
+#### Auto Revalidate
 
 <img src="killa-revalidate.gif" width="600" />
 
