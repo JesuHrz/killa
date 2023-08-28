@@ -1,37 +1,72 @@
 {
   "name": "killa",
-  "version": "1.5.1",
+  "version": "1.7.1",
   "description": "State management for Vanilla and React",
   "main": "./dist/cjs/index.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "default": "./dist/esm/index.js"
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.mjs"
       },
+      "types": "./dist/cjs/index.d.ts",
       "module": "./dist/esm/index.js",
       "default": "./dist/cjs/index.js"
     },
+    "./core": {
+      "import": {
+        "types": "./dist/esm/core.d.ts",
+        "default": "./dist/esm/core.mjs"
+      },
+      "types": "./dist/cjs/core.d.ts",
+      "module": "./dist/esm/core.js",
+      "default": "./dist/cjs/core.js"
+    },
     "./react": {
       "import": {
-        "default": "./dist/esm/react.js"
+        "types": "./dist/esm/react.d.ts",
+        "default": "./dist/esm/react.mjs"
       },
+      "types": "./dist/cjs/react.d.ts",
       "module": "./dist/esm/react.js",
       "default": "./dist/cjs/react.js"
     },
     "./deep-equals": {
       "import": {
-        "default": "./dist/esm/utils/deep-equals.js"
+        "types": "./dist/esm/utils/deep-equals.d.ts",
+        "default": "./dist/esm/utils/deep-equals.mjs"
       },
+      "types": "./dist/cjs/utils/deep-equals.d.ts",
       "module": "./dist/esm/utils/deep-equals.js",
       "default": "./dist/cjs/utils/deep-equals.js"
     },
+    "./constants": {
+      "import": {
+        "types": "./dist/esm/utils/constants.d.ts",
+        "default": "./dist/esm/utils/constants.mjs"
+      },
+      "types": "./dist/cjs/utils/constants.d.ts",
+      "module": "./dist/esm/utils/constants.js",
+      "default": "./dist/cjs/utils/constants.js"
+    },
     "./persist": {
       "import": {
-        "default": "./dist/esm/middleware/persist.js"
+        "types": "./dist/esm/middleware/persist.d.ts",
+        "default": "./dist/esm/middleware/persist.mjs"
       },
+      "types": "./dist/cjs/middleware/persist.d.ts",
       "module": "./dist/esm/middleware/persist.js",
       "default": "./dist/cjs/middleware/persist.js"
+    },
+    "./helpers": {
+      "import": {
+        "types": "./dist/esm/utils/helpers.d.ts",
+        "default": "./dist/esm/utils/helpers.mjs"
+      },
+      "types": "./dist/cjs/utils/helpers.d.ts",
+      "module": "./dist/esm/utils/helpers.js",
+      "default": "./dist/cjs/utils/helpers.js"
     }
   },
   "files": [
@@ -46,7 +81,7 @@
     "lint:fix": "eslint . --fix",
     "test": "NODE_ENV=test jest --collectCoverage",
     "test:watch": "NODE_ENV=test jest --watchAll",
-    "prepare": "npm run lint && npm run test && npm run build && node pre-publish.js"
+    "prepublishOnly": "npm run lint && npm run test && npm run build && node pre-publish.js"
   },
   "engines": {
     "node": ">=12"
@@ -69,7 +104,8 @@
   },
   "homepage": "https://github.com/jesuhrz/killa#readme",
   "dependencies": {
-    "clone": "2.1.2",
+    "just-clone": "6.2.0",
+    "killa": "^1.7.1",
     "use-sync-external-store": "1.2.0"
   },
   "devDependencies": {
@@ -82,15 +118,17 @@
     "@types/use-sync-external-store": "0.0.3",
     "@typescript-eslint/eslint-plugin": "5.52.0",
     "esbuild": "0.17.5",
+    "esbuild-plugin-d.ts": "1.1.0",
     "eslint": "8.34.0",
     "eslint-config-prettier": "8.6.0",
     "eslint-plugin-jest": "27.2.1",
-    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-prettier": "5.0.0",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
     "jest": "29.4.1",
     "jest-environment-jsdom": "29.4.1",
     "node-glob": "1.2.0",
+    "prettier": "3.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "shx": "0.3.4",

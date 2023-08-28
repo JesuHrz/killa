@@ -1,5 +1,5 @@
-import { Store } from '../core'
-import { SYMBOL_PERSIST, SYMBOL_STORE } from '../utils/constants'
+import { type Store } from 'killa/core'
+import { SYMBOL_PERSIST, SYMBOL_STORE } from 'killa/constants'
 import {
   addDocumentEvent,
   removeDocumentEvent,
@@ -7,8 +7,24 @@ import {
   deserialize,
   merge,
   addWindowEvent,
-  removeWindowEvent
-} from '../utils/helpers'
+  removeWindowEvent,
+  encoded,
+  decoded
+} from 'killa/helpers'
+
+export interface StoreWithPersist {
+  $$persist: symbol
+  name: string
+  destroy: () => void
+  rehydrate: () => void
+  hydrated: () => boolean
+}
+
+declare module '../core' {
+  interface Store {
+    persist?: StoreWithPersist
+  }
+}
 
 /** Killa Storage API interface. */
 export interface CustomStorage<T> {
@@ -47,20 +63,39 @@ export interface PersistConfig<T> {
    * @default 200
    */
   revalidateTimeout?: number
+  /**
+   *  Encrypt store using btoa and atob
+   * @default false
+   */
+  encrypted?: boolean
 }
 
-export const normalizeStorage = <T>(storage: () => CustomStorage<T>) => {
+export const normalizeStorage = <T>(
+  initializerStorage: () => CustomStorage<T>,
+  { encrypted = false } = {}
+) => {
   try {
-    const _storage = storage()
-    if (!_storage) return null
+    const storage = initializerStorage()
+    if (!storage) return null
 
     return {
       getItem: (name) => {
-        const value = _storage.getItem(name) as string
-        return deserialize<T>(value)
+        const _name = encrypted ? encoded(name) : name
+        const value = storage.getItem(_name) as string
+        const data = encrypted && value ? decoded(value) : value
+
+        return deserialize<T>(data)
       },
-      setItem: (name, value) => _storage.setItem(name, serialize(value)),
-      removeItem: (name) => _storage.removeItem(name)
+      setItem: (name, value) => {
+        const _name = encrypted ? encoded(name) : name
+        const data = encrypted ? encoded(serialize(value)) : serialize(value)
+
+        return storage.setItem(_name, data)
+      },
+      removeItem: (name) => {
+        const _name = encrypted ? encoded(name) : name
+        storage.removeItem(_name)
+      }
     } as CustomStorage<T>
   } catch (e) {
     return null
@@ -68,17 +103,17 @@ export const normalizeStorage = <T>(storage: () => CustomStorage<T>) => {
 }
 
 const validateStorage = <T>(
-  storage: CustomStorage<T> | (() => CustomStorage<T>) | null
+  initializerStorage: CustomStorage<T> | (() => CustomStorage<T>) | null
 ) => {
-  if (typeof storage === 'function') {
+  if (typeof initializerStorage === 'function') {
     try {
-      return storage()
+      return initializerStorage()
     } catch (error) {
       return null
     }
   }
 
-  return storage
+  return initializerStorage
 }
 
 export const initRevalidateOnFocus = (listener: () => void) => {
@@ -95,7 +130,9 @@ export const persist =
   (store: Store<T>) => {
     const baseConfig = {
       name: '',
-      storage: normalizeStorage(() => window.localStorage as CustomStorage<T>),
+      storage: normalizeStorage(() => window.localStorage as CustomStorage<T>, {
+        encrypted: config?.encrypted || false
+      }),
       merge,
       revalidate: true,
       revalidateTimeout: 200,
@@ -118,7 +155,7 @@ export const persist =
 
     if (!storage) {
       console.error('[Killa Persist] Provide a storage to persist your store.')
-      return null
+      return
     }
 
     const _setState = store.setState
@@ -134,7 +171,7 @@ export const persist =
 
       store.setState(() => {
         return {
-          ...merge<T>(store.getState(), persistedState as T)
+          ...merge(store.getState(), persistedState)
         }
       })
 
@@ -153,7 +190,7 @@ export const persist =
 
     hydrate()
 
-    store.persist = {
+    store.persist = Object.freeze({
       $$persist: SYMBOL_PERSIST,
       name: storageName,
       destroy: () => {
@@ -161,5 +198,5 @@ export const persist =
       },
       rehydrate: () => hydrate(),
       hydrated: () => hydrated
-    }
+    })
   }

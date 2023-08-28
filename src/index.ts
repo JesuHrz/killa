@@ -1,3 +1,2 @@
-export type { Store, Options, Selector, Subscriber } from './core'
-export { default, createStore } from './core'
-export { useStore } from './react'
+export type { Store, Options, Selector, Subscriber } from 'killa/core'
+export { createStore } from 'killa/core'

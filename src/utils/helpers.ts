@@ -1,4 +1,4 @@
-import { IS_WINDOW_DEFINED, IS_DOCUMENT_DEFINED } from './constants'
+import { IS_WINDOW_DEFINED, IS_DOCUMENT_DEFINED } from 'killa/constants'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = () => {}
@@ -19,9 +19,7 @@ export const [addWindowEvent, removeWindowEvent] =
       ]
     : [noop, noop]
 
-export const serialize = <T>(value: T): string => {
-  return JSON.stringify(value)
-}
+export const serialize = <T>(value: T): string => JSON.stringify(value)
 
 export const deserialize = <T>(value: string): T | null => {
   if (value === null) return null
@@ -29,11 +27,17 @@ export const deserialize = <T>(value: string): T | null => {
   return JSON.parse(value)
 }
 
-export const merge = <T>(state: T, persistedState: T): T => {
+export const merge = <T = unknown, U = unknown>(
+  object: T,
+  objectToMerge: U
+): T & U => {
   return {
-    ...state,
-    ...persistedState
+    ...object,
+    ...objectToMerge
   }
 }
 
 export const messageError = console.error
+
+export const encoded = (str: string) => btoa(encodeURIComponent(str))
+export const decoded = (str: string) => decodeURIComponent(atob(str))

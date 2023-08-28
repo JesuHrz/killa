@@ -1,15 +1,15 @@
 import { useDebugValue } from 'react'
-import useSyncExternalStoreExports from 'use-sync-external-store/shim/with-selector'
+import UseSyncExternalStoreShim from 'use-sync-external-store/shim/with-selector.js'
 
 // Utils
-import { deepEquals } from './utils/deep-equals'
-import { SYMBOL_STORE } from './utils/constants'
+import { deepEquals } from 'killa/deep-equals'
+import { SYMBOL_STORE } from 'killa/constants'
 
 // Types
-import type { Store, Selector } from './core'
+import type { Store, Selector } from 'killa/core'
 
 const useSyncExternalStore =
-  useSyncExternalStoreExports.useSyncExternalStoreWithSelector
+  UseSyncExternalStoreShim.useSyncExternalStoreWithSelector
 
 export const useStore = <T extends Record<string, any>>(
   store: Store<T>,

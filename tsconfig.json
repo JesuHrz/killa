@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "target": "es2016",                                /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "module": "es2015",
     "strict": true,
     "jsx": "react-jsx",
     "esModuleInterop": true,
@@ -9,14 +9,22 @@
     "emitDeclarationOnly": true,
     "moduleResolution": "node",
     "baseUrl": ".",
+    "outDir": "./dist",
     "paths": {
-      "killa": ["./src/index.((t|j)s|(t|j)sx)"],
-      "killa/*": ["./src/*.((t|j)s|(t|j)sx)"],
+      "killa": ["./src/index.ts"],
+      "killa/*": [
+        "./src/*",
+        "./src/middleware/*",
+        "./src/utils/*"
+      ]
     }
   },
   "include": [
     "src/**/*",
     "__tests__/**/*",
+    "pre-publish.js",
+    "jest.config.js",
+    "esbuild.config.js"
   ],
   "exclude": [
     "node_modules",
