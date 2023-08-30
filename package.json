@@ -1,6 +1,6 @@
 {
   "name": "killa",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "State management for Vanilla and React",
   "main": "./dist/cjs/index.js",
   "exports": {
@@ -105,7 +105,6 @@
   "homepage": "https://github.com/jesuhrz/killa#readme",
   "dependencies": {
     "just-clone": "6.2.0",
-    "killa": "^1.7.1",
     "use-sync-external-store": "1.2.0"
   },
   "devDependencies": {

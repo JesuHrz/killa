@@ -13,6 +13,7 @@
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
     "autoprefixer": "10.4.14",
+    "killa": "1.7.2",
     "next": "13.4.2",
     "postcss": "8.4.23",
     "react": "18.2.0",
