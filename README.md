@@ -138,7 +138,7 @@ const store = createStore({ counter: 0, type: '', filter: '' })
 
 const Counter = () => {
   // This component will only be rendered when counter or filter state changes
-  const { state, setState } = useStore(store, (state) => {
+  const [state, setState] = useStore(store, (state) => {
     return {
       counter: state.counter,
       filter: state.filter
@@ -163,6 +163,20 @@ const Counter = () => {
     </div>
   )
 }
+```
+
+### Silect states
+The silent states allow to memorize the selected state, this means that if any key of our store was updated it will not have any effect inside our component and will not generate a re-render. However you will be able to update the state using `setState` but this will have no effect within the component.
+
+```jsx
+// In this way, you get the whole store
+const [state, setState] = useStore(store, null)
+```
+
+
+```jsx
+// In this way, you can get a specifict state from store
+const [state, setState] = useStore(store, (state) => state.counter, true)
 ```
 
 ## Middlewares
@@ -201,7 +215,6 @@ const store = createStore(
 )
 ```
 
-
 If you wish to use other storage you can do so by using the `normalizeStorage` method to normalize the storage supported by Killa Persist.
 
 ```js
@@ -218,8 +231,6 @@ const store = createStore(
     ]
   }
 )
-
-store.getState() // { counter: 0 }
 ```
 
 #### Auto Revalidate
