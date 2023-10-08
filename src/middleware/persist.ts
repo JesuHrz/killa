@@ -193,9 +193,7 @@ export const persist =
     store.persist = Object.freeze({
       $$persist: SYMBOL_PERSIST,
       name: storageName,
-      destroy: () => {
-        storage.removeItem(storageName)
-      },
+      destroy: () => storage.removeItem(storageName),
       rehydrate: () => hydrate(),
       hydrated: () => hydrated
     })

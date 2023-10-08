@@ -112,6 +112,13 @@ store.resetState({ notes: [] }) // Overwriting all state to the new state
 store.getState() // { notes: [] }
 ```
 
+### Destroying all subscribers
+To destroy all events to which your store has subscribed, you need to use the method `destroy` and this way events won't longer be triggered
+
+```js
+store.destroy()
+```
+
 ### Using internal Actions
 You can also initialize your store using `get` and `set` actions to update state using custom method within your store
 
@@ -166,7 +173,7 @@ const Counter = () => {
 ```
 
 ### Silect states
-The silent states allow to memorize the selected state, this means that if any key of our store was updated it will not have any effect inside our component and will not generate a re-render. However you will be able to update the state using `setState` but this will have no effect within the component.
+The silent states allow to memorize the selected state, this means that if any key of our store is updated it will not have any effect inside our component and will not generate a re-render. However you will be able to update the state using `setState` but this will have no any effect within the component.
 
 ```jsx
 // In this way, you get the whole store

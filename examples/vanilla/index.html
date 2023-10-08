@@ -10,16 +10,20 @@
     <button class="js-increment">+1</button>
     <button class="js-reset">Restore to inital value</button>
     <button class="js-reset-from-scratch">Restore from scratch</button>
+    <button class="js-destroy">Destroy listeners</button>
+    <p class="js-state"></p>
     <script src="../../dist/umd/killa.min.js"></script>
     <script src="../../dist/umd/killaMiddlewares.min.js"></script>
     <script>
       const killa = window.killa
       const persist = window.killaMiddlewares.persist
 
+      const $state = document.querySelector('.js-state')
       const $text = document.querySelector('.js-counter')
       const $button = document.querySelector('.js-increment')
       const $restoreOne = document.querySelector('.js-reset')
       const $restoreTwo = document.querySelector('.js-reset-from-scratch')
+      const $destroy = document.querySelector('.js-destroy')
 
       const store = killa.createStore(
         { counter: 0, text: '', filter: '' },
@@ -28,9 +32,11 @@
 
       window.addEventListener('DOMContentLoaded', () => {
         $text.innerHTML = store.getState().counter
+        $state.innerHTML = JSON.stringify(store.getState(), null, 2)
 
         store.subscribe((state, prevState) => {
           console.log('Global subscriber', store.getState())
+          $state.innerHTML = JSON.stringify(store.getState(), null, 2)
         })
 
         store.subscribe((state) => {
@@ -55,17 +61,9 @@
           })
         })
 
-        $restoreOne.addEventListener('click', () => {
-          store.setState(() => {
-            return {}
-          })
-        })
-
-        $restoreTwo.addEventListener('click', () => {
-          store.setState((state) => {
-            return {}
-          }, true)
-        })
+        $restoreOne.addEventListener('click', () => store.resetState())
+        $restoreTwo.addEventListener('click', () => store.resetState({}))
+        $destroy.addEventListener('click', () => store.destroy())
       })
     </script>
   </body>

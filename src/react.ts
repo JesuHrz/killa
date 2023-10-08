@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useCallback } from 'react'
 import UseSyncExternalStoreShim from 'use-sync-external-store/shim/with-selector.js'
 
 // Utils
@@ -20,8 +20,10 @@ export const useStore = <T extends Record<string, any>>(
     throw new Error('Provide a valid store for useStore.')
   }
 
+  const fallbackSelector = useCallback((state: T) => state, [])
+
   if (selector === null) {
-    selector = (state) => state
+    selector = fallbackSelector
     silect = true
   }
 

@@ -1,13 +1,11 @@
 import clone from 'just-clone'
 
-// Utils
 import { deepEquals, isObject } from 'killa/deep-equals'
 import { SYMBOL_STORE, SYMBOL_SUBSCRIBER } from 'killa/constants'
 
-// Types
 export interface Options<T> {
-  compare?: (a: any, b: any) => boolean
-  clone?: (state: T) => any
+  compare?: (a: unknown, b: unknown) => boolean
+  clone?: (state: T) => T
   use?: ((store: Store<T>) => void)[]
 }
 
@@ -16,7 +14,7 @@ export type Selector<T> = (state: T) => any
 export interface Subscriber<T> {
   (state: T, prevState: T): void
   $$subscriber?: symbol
-  $$selectorState?: unknown
+  $$selectorState?: Partial<T>
   $$selector?: Selector<T>
 }
 
@@ -97,14 +95,16 @@ export function createStore<T extends State, U = InitializerFn<T> | State>(
       ? initializer(getState, setState)
       : initializer
 
-  const resetState = (state: Partial<T> | null = null) => {
-    const newState = state && isObject(state) ? state : clone(initialState)
-    setState(() => newState, true)
-  }
-
   if (!isObject(initialState)) throw new Error('Store must be an object.')
 
   state = clone<T>(initialState)
+
+  const resetState = (state: unknown | null = null) => {
+    const newState = state && isObject(state) ? state : clone(initialState)
+    store.setState(() => newState, true)
+  }
+
+  const destroy = () => subscribers.clear()
 
   const store = {
     $$store: SYMBOL_STORE,
@@ -112,7 +112,8 @@ export function createStore<T extends State, U = InitializerFn<T> | State>(
     setState,
     subscribe,
     getServerState: () => initialState,
-    resetState
+    resetState,
+    destroy
   }
 
   if (options?.use && Array.isArray(options.use)) {
