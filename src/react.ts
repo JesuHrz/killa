@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react'
+import { useRef } from 'react'
 import UseSyncExternalStoreShim from 'use-sync-external-store/shim/with-selector.js'
 
 // Utils
@@ -6,21 +6,21 @@ import { deepEquals } from 'killa/deep-equals'
 import { SYMBOL_STORE } from 'killa/constants'
 
 // Types
-import type { Store, Selector } from 'killa/core'
+import type { Store } from 'killa/core'
 
 const useSyncExternalStore =
   UseSyncExternalStoreShim.useSyncExternalStoreWithSelector
 
-export const useStore = <T extends Record<string, any>>(
+const fallbackSelector = <T, U>(state: T) => state as unknown as U
+
+export const useStore = <T, U>(
   store: Store<T>,
-  selector: Selector<T> | null = (state) => state,
+  selector: ((state: T) => U) | null = fallbackSelector,
   silect = false
-): [Partial<T>, Store<T>['setState']] => {
+): [U, Store<T>['setState']] => {
   if (store.$$store !== SYMBOL_STORE) {
     throw new Error('Provide a valid store for useStore.')
   }
-
-  const fallbackSelector = useCallback((state: T) => state, [])
 
   if (selector === null) {
     selector = fallbackSelector
@@ -33,7 +33,7 @@ export const useStore = <T extends Record<string, any>>(
     return () => state
   })
 
-  const state: T = useSyncExternalStore(
+  const state = useSyncExternalStore(
     store.subscribe,
     silect ? silentState.current() : store.getState,
     silect ? silentState.current() : store.getServerState || store.getState,

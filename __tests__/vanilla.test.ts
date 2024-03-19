@@ -7,8 +7,6 @@ describe('Vanilla', () => {
 
   it('Should fail when the store is not object', () => {
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       createStore(1)
       throw new Error('Should fail because the store is not object')
     } catch (e: any) {
@@ -206,6 +204,7 @@ describe('Vanilla', () => {
   it('Should unsubscribe to a subscriber', () => {
     const initalState = { count: 0, text: '' }
     const store = createStore(initalState)
+
     const firstSubscribe = jest.fn()
     const unsubscribe = store.subscribe(firstSubscribe, (state) => state.count)
 

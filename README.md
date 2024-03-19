@@ -13,12 +13,12 @@ npm install killa
 To use directly vanilla minified version in the browser:
 
 ```html
-<script src="https://unpkg.com/killa@1.7.2/dist/umd/killa.min.js"></script>
+<script src="https://unpkg.com/killa@1.9.0/dist/umd/killa.min.js"></script>
 ```
 
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/killa@1.7.2/dist/umd/killa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/killa@1.9.0/dist/umd/killa.min.js"></script>
 ```
 
 ### How to create your first store
@@ -190,13 +190,13 @@ const [state, setState] = useStore(store, (state) => state.counter, true)
 To use directly vanilla minified version in the browser:
 
 ```html
-<script src="https://unpkg.com/killa@1.7.2/dist/umd/killaMiddlewares.min.js"></script>
+<script src="https://unpkg.com/killa@1.9.0/dist/umd/killaMiddlewares.min.js"></script>
 ```
 
 Or from jsdelivr:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/killa@1.7.2/dist/umd/killaMiddlewares.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/killa@1.9.0/dist/umd/killaMiddlewares.min.js"></script>
 ```
 
 For vanilla, you can access to the middlewares using: `window.killaMiddlewares`

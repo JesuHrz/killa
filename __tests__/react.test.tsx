@@ -19,8 +19,7 @@ describe('React', () => {
   const Counter = ({ label = 'Counter +1' }) => {
     const [state, setState] = useStore(store, (state) => {
       return {
-        counter: state.counter,
-        filter: state.filter
+        counter: state.counter
       }
     })
 

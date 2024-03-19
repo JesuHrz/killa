@@ -1,6 +1,6 @@
 {
   "name": "killa",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "State management for Vanilla and React",
   "main": "./dist/cjs/index.js",
   "exports": {

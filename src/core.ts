@@ -9,23 +9,26 @@ export interface Options<T> {
   use?: ((store: Store<T>) => void)[]
 }
 
+type State = Record<string, any>
+
 export type Selector<T> = (state: T) => any
 
-export interface Subscriber<T> {
+export interface Subscriber<T, U = unknown> {
   (state: T, prevState: T): void
   $$subscriber?: symbol
-  $$selectorState?: Partial<T>
+  $$selectorState?: U
   $$selector?: Selector<T>
 }
 
-export interface Store<T = Record<string, any>> {
+export type StateSelector<T extends State, U> = (s: T) => U
+
+export interface Store<T = State> {
   $$store: symbol
   getState: () => T
-  setState: (fn: (state: T) => T | Partial<T>, force?: boolean) => void
-  subscribe: (
-    subscriber: Subscriber<T>,
-    selector?: Selector<T>
-  ) => () => boolean
+  setState: (fn: (state: T) => Partial<T>, force?: boolean) => void
+  subscribe: {
+    <U>(subscriber: Subscriber<T, U>, selector?: (State: T) => U): () => boolean
+  }
   getServerState: () => T
 }
 
@@ -34,9 +37,7 @@ type InitializerFn<T> = (
   setState: Store<T>['setState']
 ) => T
 
-type State = Record<string, any>
-
-export function createStore<T extends State, U = InitializerFn<T> | State>(
+export function createStore<T extends State, U = InitializerFn<T> | T>(
   initializer: U = Object.assign({}),
   options?: Options<T>
 ) {
@@ -79,6 +80,11 @@ export function createStore<T extends State, U = InitializerFn<T> | State>(
     }
   }
 
+  const initialState: T =
+    typeof initializer === 'function'
+      ? initializer(getState, setState)
+      : initializer
+
   const subscribe: Store<T>['subscribe'] = (subscriber, selector) => {
     if (typeof selector === 'function') {
       subscriber.$$subscriber = SYMBOL_SUBSCRIBER
@@ -89,11 +95,6 @@ export function createStore<T extends State, U = InitializerFn<T> | State>(
     subscribers.add(subscriber)
     return () => subscribers.delete(subscriber)
   }
-
-  const initialState: T =
-    typeof initializer === 'function'
-      ? initializer(getState, setState)
-      : initializer
 
   if (!isObject(initialState)) throw new Error('Store must be an object.')
 
