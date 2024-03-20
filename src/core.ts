@@ -11,16 +11,14 @@ export interface Options<T> {
 
 type State = Record<string, any>
 
-export type Selector<T> = (state: T) => any
+export type Selector<T, U = unknown> = (state: T) => U
 
 export interface Subscriber<T, U = unknown> {
   (state: T, prevState: T): void
   $$subscriber?: symbol
   $$selectorState?: U
-  $$selector?: Selector<T>
+  $$selector?: Selector<T, U>
 }
-
-export type StateSelector<T extends State, U> = (s: T) => U
 
 export interface Store<T = State> {
   $$store: symbol
