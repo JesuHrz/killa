@@ -245,4 +245,4 @@ const store = createStore(
 <img src="killa-revalidate.gif" width="600" />
 
 ## Support
-React >= 16.8, Chrome 58, Firefox 57, IE 11, Edge 18, Safari  11, & Node.js 12.
+React >= 18.0.0, Chrome 58, Firefox 57, IE 11, Edge 18, Safari  11, & Node.js 16.
