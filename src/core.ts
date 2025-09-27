@@ -78,9 +78,13 @@ export function createStore<T extends State, U = InitializerFn<T> | T>(
     }
   }
 
+  const _setState: Store<T>['setState'] = (...args) => {
+    store.setState(...args)
+  }
+
   const initialState: T =
     typeof initializer === 'function'
-      ? initializer(getState, setState)
+      ? initializer(getState, _setState)
       : initializer
 
   const subscribe: Store<T>['subscribe'] = (subscriber, selector) => {
