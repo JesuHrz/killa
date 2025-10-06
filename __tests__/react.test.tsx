@@ -1,5 +1,6 @@
-import '@testing-library/jest-dom/extend-expect'
+import '@testing-library/jest-dom/vitest'
 
+import { describe, expect, it, beforeEach } from 'vitest'
 import { useEffect, useRef } from 'react'
 import {
   render,
@@ -16,7 +17,7 @@ import { useStore } from '../src/react'
 describe('React', () => {
   let store: Store<{ counter: number; filter: string }>
 
-  const Counter = ({ label = 'Counter +1' }) => {
+  const Counter = ({ label = 'Counter +1' }: { label?: string }) => {
     const [state, setState] = useStore(store, (state) => {
       return {
         counter: state.counter
@@ -62,6 +63,8 @@ describe('React', () => {
     }
 
     render(<Component />)
+    const $component = screen.getByText(/component/i)
+    expect($component).toBeInTheDocument()
   })
 
   it('Should throw a error when providing an invalid store to useStore as param', () => {
@@ -122,7 +125,7 @@ describe('React', () => {
     expect(screen.getAllByText(/counter: 1/i)).toHaveLength(2)
     expect($buttons).toHaveLength(2)
 
-    $buttons[0] && fireEvent.click($buttons[0])
+    fireEvent.click($buttons[0])
 
     expect(screen.getAllByText(/counter: 2/i)).toHaveLength(2)
   })

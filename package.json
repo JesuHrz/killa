@@ -1,6 +1,6 @@
 {
   "name": "killa",
-  "version": "1.9.1",
+  "version": "1.10.0",
   "description": "State management for Vanilla and React",
   "main": "./dist/cjs/index.js",
   "exports": {
@@ -76,13 +76,14 @@
   "scripts": {
     "dev:watch": "npx nodemon --ext 'ts,js' --exec 'node dev-build.js'",
     "build:watch": "npx nodemon  --ext 'ts,js' --exec 'npm run build'",
-    "build": "npm run prebuild && node esbuild.config.js",
+    "build": "npm run prebuild && node esbuild.config.mjs",
     "prebuild": "shx rm -rf dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "NODE_ENV=test jest --collectCoverage",
-    "test:watch": "NODE_ENV=test jest --watchAll",
-    "prepublishOnly": "npm run lint && npm run test && npm run build && node pre-publish.js"
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "prepublishOnly": "npm run lint && npm run test && npm run build && node pre-publish.mjs"
   },
   "engines": {
     "node": ">=12"
@@ -109,30 +110,38 @@
     "use-sync-external-store": ">=1.2.0"
   },
   "devDependencies": {
+    "@eslint/js": "9.36.0",
     "@swc/core": "1.13.19",
-    "@swc/jest": "0.2.39",
-    "@testing-library/jest-dom": "6.8.0",
+    "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.0",
     "@testing-library/user-event": "14.6.1",
     "@types/clone": "2.1.4",
+    "@types/node": "24.6.2",
+    "@types/react": "18.3.1",
     "@types/use-sync-external-store": "1.5.0",
-    "@typescript-eslint/eslint-plugin": "8.44.1",
+    "@vitest/coverage-v8": "3.2.4",
+    "@vitest/eslint-plugin": "1.3.16",
+    "@vitest/ui": "3.2.4",
     "esbuild": "0.25.10",
     "esbuild-plugin-d.ts": "1.3.1",
     "eslint": "9.36.0",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-jest": "29.0.1",
+    "eslint-import-resolver-typescript": "4.4.4",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-jest-dom": "5.5.0",
     "eslint-plugin-prettier": "5.5.4",
     "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-react-hooks": "5.2.0",
-    "jest": "30.1.3",
-    "jest-environment-jsdom": "30.1.2",
+    "eslint-plugin-react-hooks": "6.1.1",
+    "eslint-plugin-testing-library": "7.11.0",
+    "jsdom": "27.0.0",
     "prettier": "3.6.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "shx": "0.4.0",
     "typescript": "5.9.2",
-    "@types/react": "18.3.1"
+    "typescript-eslint": "8.45.0",
+    "use-sync-external-store": "1.5.0",
+    "vitest": "3.2.4"
   },
   "peerDependencies": {
     "react": ">=18.0.0",

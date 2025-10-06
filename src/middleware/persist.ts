@@ -97,7 +97,7 @@ export const normalizeStorage = <T>(
         storage.removeItem(_name)
       }
     } as CustomStorage<T>
-  } catch (e) {
+  } catch (_e) {
     return null
   }
 }
@@ -108,7 +108,7 @@ const validateStorage = <T>(
   if (typeof initializerStorage === 'function') {
     try {
       return initializerStorage()
-    } catch (error) {
+    } catch (_e) {
       return null
     }
   }
@@ -125,6 +125,8 @@ export const initRevalidateOnFocus = (listener: () => void) => {
   }
 }
 
+// TODO: Add default config to resolve
+// __tests__/persist.test.ts:144
 export const persist =
   <T>(config: PersistConfig<T>) =>
   (store: Store<T>) => {

@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest'
+
 import { createStore } from '../src'
 
 describe('Vanilla', () => {
@@ -38,7 +40,7 @@ describe('Vanilla', () => {
   it('Should update the state', () => {
     const initalState = { count: 0 }
     const store = createStore<{ count: number }>(initalState)
-    const cb = jest.fn(() => ({ count: 1 }))
+    const cb = vi.fn(() => ({ count: 1 }))
 
     store.setState(cb)
 
@@ -62,7 +64,7 @@ describe('Vanilla', () => {
     })
   })
 
-  it('Should be able to use the get and set method to update the state ', () => {
+  it('Should be able to use the get and set method to update the state from initializer function', () => {
     const store = createStore<{
       count: number
       inc: () => void
@@ -114,7 +116,7 @@ describe('Vanilla', () => {
   it('Should call the global subscriber when updating the state', () => {
     const initalState = { count: 0 }
     const store = createStore<{ count: number }>(initalState)
-    const cb = jest.fn()
+    const cb = vi.fn()
 
     store.subscribe(cb)
 
@@ -131,7 +133,7 @@ describe('Vanilla', () => {
     const initalState = { count: 0 }
     const store = createStore(initalState)
 
-    const firstSubscribe = jest.fn((state, prevState) => {
+    const firstSubscribe = vi.fn((state, prevState) => {
       expect(state).toEqual(store.getState())
       expect(state).not.toBe(store.getState())
 
@@ -142,7 +144,7 @@ describe('Vanilla', () => {
       state.prevState = 2
     })
 
-    const secondSubscribe = jest.fn((state, prevState) => {
+    const secondSubscribe = vi.fn((state, prevState) => {
       expect(state).toEqual(store.getState())
       expect(state).not.toBe(store.getState())
       expect(state.count).toBe(1)
@@ -168,8 +170,8 @@ describe('Vanilla', () => {
   it('Should just call the subscribers when the state of the selector is updated', () => {
     const initalState = { count: 0, text: '' }
     const store = createStore(initalState)
-    const firstSubscribe = jest.fn()
-    const secondSubscribe = jest.fn()
+    const firstSubscribe = vi.fn()
+    const secondSubscribe = vi.fn()
 
     store.subscribe(firstSubscribe, (state) => state.count)
     store.subscribe(secondSubscribe, (state) => state.text)
@@ -187,7 +189,7 @@ describe('Vanilla', () => {
   it('Should just call a subscribers once when the subscriber function is the same', () => {
     const initalState = { count: 0, text: '' }
     const store = createStore(initalState)
-    const firstSubscribe = jest.fn()
+    const firstSubscribe = vi.fn()
 
     store.subscribe(firstSubscribe)
     store.subscribe(firstSubscribe)
@@ -205,7 +207,7 @@ describe('Vanilla', () => {
     const initalState = { count: 0, text: '' }
     const store = createStore(initalState)
 
-    const firstSubscribe = jest.fn()
+    const firstSubscribe = vi.fn()
     const unsubscribe = store.subscribe(firstSubscribe, (state) => state.count)
 
     store.setState(() => {
@@ -260,8 +262,8 @@ describe('Vanilla', () => {
   })
 
   it('Should not update the state if the compare function return true', () => {
-    const compare = jest.fn(() => true)
-    const firstSubscribe = jest.fn()
+    const compare = vi.fn(() => true)
+    const firstSubscribe = vi.fn()
 
     const store = createStore({ count: 0, text: '' }, { compare })
 
@@ -273,10 +275,10 @@ describe('Vanilla', () => {
   })
 
   it('Should update the state if the compare function return false', () => {
-    const compare = jest.fn(() => false)
+    const compare = vi.fn(() => false)
     const store = createStore({ count: 0, text: '' }, { compare })
 
-    const firstSubscribe = jest.fn()
+    const firstSubscribe = vi.fn()
 
     store.subscribe(firstSubscribe)
     store.setState((state) => state)
@@ -286,19 +288,19 @@ describe('Vanilla', () => {
   })
 
   it('Should apply middlewares', () => {
-    const middleware = jest.fn()
+    const middleware = vi.fn()
     const store = createStore({ count: 0, text: '' }, { use: [middleware] })
 
     expect(middleware).toHaveBeenCalledTimes(1)
-    expect(middleware).toHaveBeenCalledWith(store)
+    expect(middleware).toHaveBeenCalledExactlyOnceWith(store)
   })
 
   it('Should fail if use option is not an array', () => {
-    const middleware = jest.fn()
+    const middleware = vi.fn()
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     createStore({ count: 0, text: '' }, { use: '' })
 
-    expect(middleware).not.toBeCalled()
+    expect(middleware).not.toHaveBeenCalled()
   })
 })

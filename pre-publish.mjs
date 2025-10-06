@@ -1,5 +1,8 @@
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
 const pkg = require('./package.json')
 
 const version = pkg.version
@@ -15,7 +18,7 @@ const prePublish = () => {
 
     fs.writeFileSync(readmePath, updatedFile)
   } catch (err) {
-    console.error('Error when trying to update the README.md')
+    console.error('Error when trying to update the README.md', err)
   }
 }
 

@@ -1,13 +1,12 @@
 import { IS_WINDOW_DEFINED, IS_DOCUMENT_DEFINED } from 'killa/constants'
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = () => {}
 
 export const [addDocumentEvent, removeDocumentEvent] =
   IS_DOCUMENT_DEFINED && document.addEventListener
     ? [
-        document.addEventListener.bind(window),
-        document.removeEventListener.bind(window)
+        document.addEventListener.bind(document),
+        document.removeEventListener.bind(document)
       ]
     : [noop, noop]
 

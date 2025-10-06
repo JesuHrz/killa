@@ -1,7 +1,7 @@
-const path = require('path')
-const glob = require('glob')
-const esbuild = require('esbuild')
-const { dtsPlugin } = require('esbuild-plugin-d.ts')
+import path from 'path'
+import { glob } from 'glob'
+import esbuild from 'esbuild'
+import { dtsPlugin } from 'esbuild-plugin-d.ts'
 
 const buildForCustomEnvironment = async ({
   format = 'cjs',
@@ -27,9 +27,9 @@ const buildForCustomEnvironment = async ({
 
     console.log(`\n✅ Build for ${format} successful 🚀`)
     return result
-  } catch (error) {
-    console.error(`\n❌ Build failed for ${format}:`, error)
-    throw error
+  } catch (_error) {
+    console.error(`\n❌ Build failed for ${format}:`, _error)
+    throw _error
   }
 }
 
@@ -57,17 +57,15 @@ const buildForBrowser = async ({
     })
 
     console.log(`\n✅ Build for ${output} successful 🚀`)
-  } catch (error) {
-    console.error(`\n❌ Build failed for ${output}:`, error)
-    throw error
+  } catch (_error) {
+    console.error(`\n❌ Build failed for ${output}:`, _error)
+    throw _error
   }
 }
 
 const init = async (isDev = false) => {
   try {
-    console.log(
-      `⚒️  ${isDev ? 'Development' : 'Production'} build started...`
-    )
+    console.log(`⚒️  ${isDev ? 'Development' : 'Production'} build started...`)
 
     await buildForCustomEnvironment({
       format: 'cjs',
@@ -101,8 +99,8 @@ const init = async (isDev = false) => {
     }
 
     console.log('\n🎉 All builds completed successfully!')
-  } catch (error) {
-    console.error('\n💥 Build process failed!')
+  } catch (e) {
+    console.error('\n💥 Build process failed!', e)
     process.exit(1)
   }
 }

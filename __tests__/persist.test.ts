@@ -1,3 +1,5 @@
+import { describe, expect, it, beforeEach, vi } from 'vitest'
+
 import { createStore, Store } from '../src'
 import { SYMBOL_PERSIST } from '../src/utils/constants'
 import { encoded, decoded, deserialize } from '../src/utils/helpers'
@@ -8,12 +10,12 @@ const createMockedStorage = (persistedState: { counter: number }) => {
   let state: State | null = persistedState
 
   return {
-    getItem: jest.fn(() => {
+    getItem: vi.fn(() => {
       if (!state) return null
       return state
     }),
-    setItem: jest.fn(),
-    removeItem: jest.fn(() => {
+    setItem: vi.fn(),
+    removeItem: vi.fn(() => {
       state = null
     })
   }
@@ -26,7 +28,7 @@ describe('Persist', () => {
   const mockedStorage = createMockedStorage(persistedState)
 
   beforeEach(() => {
-    store = createStore({ counter: 0 }) as unknown as typeof store
+    store = createStore({ counter: 0 })
     mockedStorage.getItem.mockClear()
     mockedStorage.setItem.mockClear()
     mockedStorage.removeItem.mockClear()
@@ -37,7 +39,7 @@ describe('Persist', () => {
   })
 
   it('Should init the middleware with the storage by default', () => {
-    persist<typeof persistedState>({ name: storeName })(store)
+    persist({ name: storeName })(store)
 
     expect(store?.persist?.name).toBe(storeName)
     expect(store?.persist?.hydrated()).toEqual(true)
@@ -47,7 +49,7 @@ describe('Persist', () => {
   })
 
   it('Should decode and encode the store every time the store is updated', () => {
-    persist<typeof persistedState>({ name: storeName, encrypted: true })(store)
+    persist({ name: storeName, encrypted: true })(store)
 
     const getStore = () =>
       deserialize(
@@ -61,12 +63,12 @@ describe('Persist', () => {
     expect(store.getState()).toEqual(getStore())
   })
 
-  it('Should init the middleware with a custom stogare', () => {
+  it('Should init the middleware with a custom storage', () => {
     persist({ name: storeName, storage: mockedStorage })(store)
 
     store.setState(() => ({ counter: 2 }))
 
-    expect(mockedStorage.getItem).toBeCalledTimes(1)
+    expect(mockedStorage.getItem).toHaveBeenCalledTimes(1)
     expect(mockedStorage.setItem).toHaveBeenNthCalledWith(1, storeName, {
       counter: 1
     })
@@ -79,8 +81,8 @@ describe('Persist', () => {
   it('Should hydrate the store with the persisted store', () => {
     persist({ name: storeName, storage: mockedStorage })(store)
 
-    expect(mockedStorage.getItem).toBeCalledTimes(1)
-    expect(mockedStorage.getItem).toHaveBeenCalledWith(storeName)
+    expect(mockedStorage.getItem).toHaveBeenCalledTimes(1)
+    expect(mockedStorage.getItem).toHaveBeenCalledExactlyOnceWith(storeName)
     expect(mockedStorage.getItem).toHaveReturnedWith(persistedState)
     expect(store.getState()).toEqual(persistedState)
   })
@@ -90,7 +92,7 @@ describe('Persist', () => {
 
     store?.persist?.rehydrate()
 
-    expect(mockedStorage.getItem).toBeCalledTimes(2)
+    expect(mockedStorage.getItem).toHaveBeenCalledTimes(2)
     expect(store?.persist?.hydrated()).toEqual(true)
   })
 
@@ -99,7 +101,7 @@ describe('Persist', () => {
 
     store.setState(() => ({ counter: 2 }))
 
-    expect(mockedStorage.getItem).toBeCalledTimes(1)
+    expect(mockedStorage.getItem).toHaveBeenCalledTimes(1)
     expect(mockedStorage.setItem).toHaveBeenNthCalledWith(1, storeName, {
       counter: 1
     })
@@ -109,19 +111,51 @@ describe('Persist', () => {
     expect(store.getState()).toEqual({ counter: 2 })
   })
 
-  it('Should persist the store after updating the store', () => {
+  it('Should persist state after updating the store using set method from initializer function', () => {
+    type StoreState = { counter: number; increment: () => void }
+    const store = createStore<StoreState>((_, set) => {
+      return {
+        counter: 0,
+        increment: () => {
+          set((state) => ({ counter: state.counter + 1 }))
+        }
+      }
+    })
+
     persist({ name: storeName, storage: mockedStorage })(store)
 
-    store.setState(() => ({ counter: 2 }))
+    store.getState().increment()
 
-    expect(mockedStorage.getItem).toBeCalledTimes(1)
     expect(mockedStorage.setItem).toHaveBeenNthCalledWith(1, storeName, {
-      counter: 1
+      counter: 1,
+      increment: expect.any(Function)
     })
-    expect(mockedStorage.setItem).toHaveBeenNthCalledWith(2, storeName, {
-      counter: 2
+  })
+
+  it('Should get persisted state after updating the store using set method from initializer function', () => {
+    const store = createStore<{
+      counter: number
+      increment: () => void
+      getCounter: () => number
+    }>((get, set) => {
+      return {
+        counter: 0,
+        increment: () => {
+          set((state) => ({ counter: state.counter + 1 }))
+        },
+        getCounter: () => {
+          return get().counter
+        }
+      }
     })
-    expect(store.getState()).toEqual({ counter: 2 })
+
+    persist({ name: storeName, storage: mockedStorage })(store)
+
+    store.getState().increment()
+
+    expect(store.getState().getCounter()).toBe(2)
+
+    expect(mockedStorage.getItem).toHaveBeenNthCalledWith(1, storeName)
   })
 
   it('Should remove the persisted store', () => {
@@ -131,34 +165,34 @@ describe('Persist', () => {
 
     store?.persist?.destroy()
 
-    expect(mockedStorage.removeItem).toBeCalledTimes(1)
-    expect(mockedStorage.removeItem).toHaveBeenCalledWith(storeName)
+    expect(mockedStorage.removeItem).toHaveBeenCalledTimes(1)
+    expect(mockedStorage.removeItem).toHaveBeenCalledExactlyOnceWith(storeName)
     expect(mockedStorage.getItem()).toBe(null)
   })
 
   it('Should print an error when name store is empty', () => {
-    const logSpy = jest.spyOn(console, 'error')
+    const logSpy = vi.spyOn(console, 'error')
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     persist()(store)
 
     expect(logSpy).toHaveBeenCalledTimes(1)
-    expect(logSpy).toHaveBeenCalledWith(
+    expect(logSpy).toHaveBeenCalledExactlyOnceWith(
       '[Killa Persist] Provide a name to persist your store.'
     )
     logSpy.mockRestore()
   })
 
   it('Should print an error when name storage is empty', () => {
-    const logSpy = jest.spyOn(console, 'error')
+    const logSpy = vi.spyOn(console, 'error')
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     persist({ name: storeName, storage: null })(store)
 
     expect(logSpy).toHaveBeenCalledTimes(1)
-    expect(logSpy).toHaveBeenCalledWith(
+    expect(logSpy).toHaveBeenCalledExactlyOnceWith(
       '[Killa Persist] Provide a storage to persist your store.'
     )
 
@@ -166,14 +200,14 @@ describe('Persist', () => {
   })
 
   it('Should print an error when killa store is invalid', () => {
-    const logSpy = jest.spyOn(console, 'error')
+    const logSpy = vi.spyOn(console, 'error')
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     persist({ name: storeName, storage: mockedStorage })({})
 
     expect(logSpy).toHaveBeenCalledTimes(1)
-    expect(logSpy).toHaveBeenCalledWith(
+    expect(logSpy).toHaveBeenCalledExactlyOnceWith(
       '[Killa Persist] Provide a valid killa store to persist your store.'
     )
 
@@ -181,14 +215,14 @@ describe('Persist', () => {
   })
 
   it('Should print an error when the custom storage is invalid', () => {
-    const logSpy = jest.spyOn(console, 'error')
+    const logSpy = vi.spyOn(console, 'error')
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     persist({ name: storeName, storage: () => AsyncStore })(store)
 
     expect(logSpy).toHaveBeenCalledTimes(1)
-    expect(logSpy).toHaveBeenCalledWith(
+    expect(logSpy).toHaveBeenCalledExactlyOnceWith(
       '[Killa Persist] Provide a storage to persist your store.'
     )
 

@@ -1,3 +1,4 @@
+import { describe, beforeEach, afterEach, expect, it, vi } from 'vitest'
 import { EventEmitter } from 'events'
 
 const FOCUS_EVENT = 'focus'
@@ -23,8 +24,8 @@ describe('Init Revalidate On Focus', () => {
   type TDocument = typeof global.document
 
   const globalSpy = {
-    window: jest.spyOn(global, 'window', 'get'),
-    document: jest.spyOn(global, 'document', 'get')
+    window: vi.spyOn(global, 'window', 'get'),
+    document: vi.spyOn(global, 'document', 'get')
   }
 
   beforeEach(() => {
@@ -35,7 +36,7 @@ describe('Init Revalidate On Focus', () => {
       () => eventEmitter as unknown as TDocument
     )
 
-    jest.resetModules()
+    vi.resetModules()
   })
 
   afterEach(() => {
@@ -43,11 +44,10 @@ describe('Init Revalidate On Focus', () => {
     globalSpy.document.mockClear()
   })
 
-  it('Should trigger focus event', () => {
-    const mockFn = jest.fn()
+  it('Should trigger focus event', async () => {
+    const mockFn = vi.fn()
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { initRevalidateOnFocus } = require('../src/middleware/persist')
+    const { initRevalidateOnFocus } = await import('../src/middleware/persist')
 
     const revalidateOnFocus = initRevalidateOnFocus(mockFn)
 
@@ -59,11 +59,11 @@ describe('Init Revalidate On Focus', () => {
 
     eventEmitter.emit(FOCUS_EVENT)
 
-    expect(mockFn).toBeCalledTimes(1)
+    expect(mockFn).toHaveBeenCalledTimes(1)
   })
 
-  it('Should trigger visibilitychange event', () => {
-    const mockFn = jest.fn()
+  it('Should trigger visibilitychange event', async () => {
+    const mockFn = vi.fn()
 
     globalSpy.window.mockImplementation(
       () => eventEmitter as unknown as TWindow
@@ -72,8 +72,7 @@ describe('Init Revalidate On Focus', () => {
       () => eventEmitter as unknown as TDocument
     )
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { initRevalidateOnFocus } = require('../src/middleware/persist')
+    const { initRevalidateOnFocus } = await import('../src/middleware/persist')
 
     const revalidateOnFocus = initRevalidateOnFocus(mockFn)
 
@@ -85,6 +84,6 @@ describe('Init Revalidate On Focus', () => {
 
     eventEmitter.emit(VISIBILITYCHANGE_EVENT)
 
-    expect(mockFn).toBeCalledTimes(1)
+    expect(mockFn).toHaveBeenCalledTimes(1)
   })
 })
